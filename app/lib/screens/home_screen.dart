@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'dashboard_screen.dart';
-import 'analytics_screen.dart';
-import 'farm_tools_screen.dart';
 import 'home_content_screen.dart';
-import 'discover_screen.dart';
-import 'my_region_screen.dart';
-import 'more_features_screen.dart';
+import 'ai_hub_screen.dart';
+import 'insights_screen.dart';
+import 'tools_screen.dart';
 import 'assistant_screen.dart';
 
 class AgriBaseHomeScreen extends StatefulWidget {
@@ -16,16 +13,13 @@ class AgriBaseHomeScreen extends StatefulWidget {
 }
 
 class _AgriBaseHomeScreenState extends State<AgriBaseHomeScreen> {
-  int _selectedNavIndex = 3; // Home is center and selected by default
+  int _selectedNavIndex = 0; // Home is selected by default
 
   final List<Widget> _screens = [
-    const DashboardScreen(), // Data
-    const AnalyticsScreen(), // Analytics
-    const FarmToolsScreen(), // Firm Tools
-    const HomeScreen(), // Home (center prominent)
-    const DiscoverScreen(), // Discover
-    const MyRegionScreen(), // My Region
-    const MoreFeaturesScreen(), // More Features
+    const HomeScreen(), // Home Dashboard
+    const AIHubScreen(), // AI Hub (centralized AI features)
+    const InsightsScreen(), // Insights (merged Analytics, Discover, Region)
+    const ToolsScreen(), // Tools (Calculators, Settings)
   ];
 
   @override
@@ -36,56 +30,109 @@ class _AgriBaseHomeScreenState extends State<AgriBaseHomeScreen> {
     return Scaffold(
       body: IndexedStack(index: _selectedNavIndex, children: _screens),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: theme.colorScheme.primary,
+        backgroundColor: const Color(0xFF1A237E), // Deep indigo for AI
         onPressed: () {
           Navigator.of(
             context,
           ).push(MaterialPageRoute(builder: (_) => const AssistantScreen()));
         },
-        icon: Icon(
-          Icons.chat_bubble_outline,
-          color: theme.colorScheme.onPrimary,
-        ),
-        label: Text(
+        icon: const Icon(Icons.auto_awesome, color: Colors.white),
+        label: const Text(
           'Ask AI',
-          style: TextStyle(
-            color: theme.colorScheme.onPrimary,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedNavIndex,
-        backgroundColor: isDark ? theme.colorScheme.surface : Colors.white,
-        selectedItemColor: theme.colorScheme.primary,
-        unselectedItemColor: isDark ? Colors.grey[400] : Colors.grey,
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) {
-          setState(() {
-            _selectedNavIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.dataset), label: 'Data'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.show_chart),
-            label: 'Analytics',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.construction),
-            label: 'Firm Tools',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home, size: 28),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Discover'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.location_on),
-            label: 'My Region',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: 'More'),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: NavigationBar(
+          selectedIndex: _selectedNavIndex,
+          backgroundColor: isDark ? theme.colorScheme.surface : Colors.white,
+          indicatorColor: theme.colorScheme.primary.withValues(alpha: 0.2),
+          onDestinationSelected: (index) {
+            setState(() {
+              _selectedNavIndex = index;
+            });
+          },
+          destinations: [
+            NavigationDestination(
+              icon: Icon(
+                Icons.dashboard_outlined,
+                color: _selectedNavIndex == 0
+                    ? theme.colorScheme.primary
+                    : isDark
+                    ? Colors.grey[400]
+                    : Colors.grey[600],
+              ),
+              selectedIcon: Icon(
+                Icons.dashboard,
+                color: theme.colorScheme.primary,
+              ),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.psychology_outlined,
+                  color: _selectedNavIndex == 1
+                      ? Colors.white
+                      : isDark
+                      ? Colors.grey[400]
+                      : const Color.fromARGB(255, 235, 192, 0),
+                ),
+              ),
+              selectedIcon: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.psychology_outlined, color: theme.colorScheme.primary,),
+              ),
+              label: 'AI Hub',
+            ),
+            NavigationDestination(
+              icon: Icon(
+                Icons.insights_outlined,
+                color: _selectedNavIndex == 2
+                    ? theme.colorScheme.primary
+                    : isDark
+                    ? Colors.grey[400]
+                    : Colors.grey[600],
+              ),
+              selectedIcon: Icon(
+                Icons.insights,
+                color: theme.colorScheme.primary,
+              ),
+              label: 'Insights',
+            ),
+            NavigationDestination(
+              icon: Icon(
+                Icons.build_circle_outlined,
+                color: _selectedNavIndex == 3
+                    ? theme.colorScheme.primary
+                    : isDark
+                    ? Colors.grey[400]
+                    : Colors.grey[600],
+              ),
+              selectedIcon: Icon(
+                Icons.build_circle,
+                color: theme.colorScheme.primary,
+              ),
+              label: 'Tools',
+            ),
+          ],
+        ),
       ),
     );
   }

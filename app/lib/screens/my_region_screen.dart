@@ -8,7 +8,8 @@ import '../utils/translations.dart';
 import '../utils/translation_helper.dart';
 
 class MyRegionScreen extends StatefulWidget {
-  const MyRegionScreen({super.key});
+  final bool embedded;
+  const MyRegionScreen({super.key, this.embedded = false});
 
   @override
   State<MyRegionScreen> createState() => _MyRegionScreenState();
@@ -130,35 +131,23 @@ class _MyRegionScreenState extends State<MyRegionScreen> {
     final locale = localizationProvider.locale;
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.primary,
-        elevation: 0,
-        title: Text(
-          Translations.translate(locale, 'myRegion'),
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // District Selector
-            Text(
-              Translations.translate(locale, 'selectDistrict'),
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-                fontWeight: FontWeight.w600,
-              ),
+    final body = SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // District Selector
+          Text(
+            Translations.translate(locale, 'selectDistrict'),
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+              fontWeight: FontWeight.w600,
             ),
-            const SizedBox(height: 8),
-            GestureDetector(
-              onTap: () async {
+          ),
+          const SizedBox(height: 8),
+          GestureDetector(
+            onTap: () async {
                 final choice = await showDialog<String?>(
                   context: context,
                   builder: (ctx) {
@@ -486,8 +475,7 @@ class _MyRegionScreenState extends State<MyRegionScreen> {
                                 ],
                               ),
                             );
-                          })
-                          .toList()),
+                          }).toList()),
                     ],
                   ),
                 ),
@@ -495,7 +483,25 @@ class _MyRegionScreenState extends State<MyRegionScreen> {
             ],
           ],
         ),
+      );
+
+    if (widget.embedded) {
+      return body;
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: theme.colorScheme.primary,
+        elevation: 0,
+        title: Text(
+          Translations.translate(locale, 'myRegion'),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
+      body: body,
     );
   }
 }

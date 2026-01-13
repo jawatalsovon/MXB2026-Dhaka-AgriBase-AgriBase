@@ -3,111 +3,374 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'settings_screen.dart';
 import 'login_screen.dart';
+import 'calculator_screen.dart';
 import '../providers/auth_provider.dart';
 import '../providers/localization_provider.dart';
+import '../providers/weather_provider.dart';
+import '../providers/soil_provider.dart';
+import '../providers/location_provider.dart';
 import '../utils/translations.dart';
 import '../widgets/weather_widget.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Consumer2<AuthProvider, LocalizationProvider>(
-      builder: (context, authProvider, localizationProvider, child) {
-        final isAuthenticated = authProvider.isAuthenticated;
-        final locale = localizationProvider.locale;
-        final theme = Theme.of(context);
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
-        return Scaffold(
-          appBar: AppBar(
-            backgroundColor: theme.colorScheme.primary,
-            elevation: 0,
-            centerTitle: true,
-            leading: IconButton(
-              icon: Icon(Icons.menu, color: theme.colorScheme.onPrimary),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        const SettingsScreen(),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                          const begin = Offset(1.0, 0.0);
-                          const end = Offset.zero;
-                          const curve = Curves.ease;
-                          var tween = Tween(
-                            begin: begin,
-                            end: end,
-                          ).chain(CurveTween(curve: curve));
-                          return SlideTransition(
-                            position: animation.drive(tween),
-                            child: child,
-                          );
-                        },
-                  ),
-                );
-              },
-            ),
-            title: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.eco, color: theme.colorScheme.onPrimary, size: 24),
-                const SizedBox(width: 8),
-                Text(
-                  "AgriBase",
-                  style: TextStyle(
-                    color: theme.colorScheme.onPrimary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              if (isAuthenticated)
-                IconButton(
-                  icon: Icon(Icons.logout, color: theme.colorScheme.onPrimary),
-                  onPressed: () => _showSignOutDialog(context, authProvider),
-                ),
-            ],
-          ),
-          body: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Hero Section
-                _buildHeroSection(
-                  context,
-                  isAuthenticated,
-                  locale,
-                  authProvider,
-                ),
+class _HomeScreenState extends State<HomeScreen> {
+  List<Map<String, dynamic>> _dailyInsights = [];
+  int _currentInsightIndex = 0;
+  bool _insightsLoading = true;
 
-                // Bangladeshi Farming Section
-                _buildBangladeshiFarmingSection(context),
+  @override
+  void initState() {
+    super.initState();
+    _initializeData();
+  }
 
-                // Weather widget (only for authenticated users)
-                if (isAuthenticated)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-                    child: WeatherWidget(),
-                  ),
+  Future<void> _initializeData() async {
+    try {
+      final locationProvider = Provider.of<LocationProvider>(
+        context,
+        listen: false,
+      );
+      final weatherProvider = Provider.of<WeatherProvider>(
+        context,
+        listen: false,
+      );
+      final soilProvider = Provider.of<SoilProvider>(context, listen: false);
 
-                // App Goal Section
-                _buildAppGoalSection(),
+      // Get location
+      await locationProvider.requestLocation();
 
-                // App Overview Section
-                _buildAppOverviewSection(context),
+      debugPrint(
+        'Location obtained: ${locationProvider.latitude}, ${locationProvider.longitude}',
+      );
 
-                // Contact Section
-                _buildContactSection(context),
-              ],
-            ),
-          ),
+      if (locationProvider.latitude != null &&
+          locationProvider.longitude != null) {
+        // Fetch weather and soil data
+        final lat = locationProvider.latitude!;
+        final lon = locationProvider.longitude!;
+        final locationName = locationProvider.districtName ?? 'Location';
+
+        debugPrint('Fetching weather for: $lat, $lon (Name: $locationName)');
+
+        await Future.wait([
+          weatherProvider.fetchWeather(lat, lon, locationName: locationName),
+          soilProvider.fetchSoil(lat, lon),
+        ]);
+
+        debugPrint(
+          'Weather temp: ${weatherProvider.weatherData?.currentTemp}°C',
         );
-      },
+
+        // Generate AI insights
+        await _generateInsights();
+      } else {
+        debugPrint('Location not obtained, using defaults');
+      }
+    } catch (e) {
+      debugPrint('Error initializing data: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _insightsLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _generateInsights() async {
+    try {
+      final weatherProvider = Provider.of<WeatherProvider>(
+        context,
+        listen: false,
+      );
+      final soilProvider = Provider.of<SoilProvider>(context, listen: false);
+      final insights = <Map<String, dynamic>>[];
+
+      final weather = weatherProvider.weatherData;
+      final soil = soilProvider.soilData;
+
+      debugPrint('Generating insights...');
+      debugPrint('Weather data: $weather');
+      debugPrint('Weather currentTemp: ${weather?.currentTemp}');
+      debugPrint('Soil data: $soil');
+
+      // Weather-based insights
+      if (weather != null && weather.dailyForecasts.isNotEmpty) {
+        final today = weather.dailyForecasts.first;
+
+        // High precipitation alert
+        if (today.precipitationProbability > 70) {
+          insights.add({
+            'icon': Icons.water_drop,
+            'color': Colors.blue,
+            'title': 'High Rainfall Expected',
+            'message':
+                '${today.precipitationProbability}% chance of rain today. Delay spraying operations.',
+            'severity': 'warning',
+          });
+        }
+
+        // Temperature-based insight
+        if (today.maxTemp > 32) {
+          insights.add({
+            'icon': Icons.wb_sunny,
+            'color': Colors.orange,
+            'title': 'Heat Alert',
+            'message':
+                'High temperature (${today.maxTemp.toStringAsFixed(1)}°C). Ensure adequate irrigation.',
+            'severity': 'warning',
+          });
+        } else if (today.maxTemp > 25 && today.maxTemp < 30) {
+          insights.add({
+            'icon': Icons.wb_sunny,
+            'color': Colors.green,
+            'title': 'Optimal Growing Conditions',
+            'message':
+                'Temperature range ideal for most crops. Good time for field activities.',
+            'severity': 'tip',
+          });
+        }
+
+        // Wind speed alert
+        if (today.windSpeed > 15) {
+          insights.add({
+            'icon': Icons.air,
+            'color': Colors.orange,
+            'title': 'High Wind Alert',
+            'message':
+                'Wind speed ${today.windSpeed.toStringAsFixed(1)} km/h. Avoid pesticide spraying.',
+            'severity': 'warning',
+          });
+        }
+      }
+
+      // Soil-based insights
+      if (soil != null) {
+        if (soil.ph < 6.0) {
+          insights.add({
+            'icon': Icons.eco,
+            'color': Colors.red,
+            'title': 'Acidic Soil Detected',
+            'message':
+                'pH ${soil.ph.toStringAsFixed(1)} - Consider lime application to raise pH.',
+            'severity': 'warning',
+          });
+        } else if (soil.ph > 7.8) {
+          insights.add({
+            'icon': Icons.eco,
+            'color': Colors.amber,
+            'title': 'Alkaline Soil',
+            'message':
+                'pH ${soil.ph.toStringAsFixed(1)} - Sulfur addition may help lower pH.',
+            'severity': 'warning',
+          });
+        } else {
+          insights.add({
+            'icon': Icons.eco,
+            'color': Colors.green,
+            'title': 'Optimal Soil pH',
+            'message':
+                'pH ${soil.ph.toStringAsFixed(1)} - Ideal range for most crops.',
+            'severity': 'tip',
+          });
+        }
+
+        if (soil.organicCarbon < 1.0) {
+          insights.add({
+            'icon': Icons.compost,
+            'color': Colors.brown,
+            'title': 'Low Organic Matter',
+            'message':
+                'Consider adding compost to improve soil fertility and water retention.',
+            'severity': 'tip',
+          });
+        }
+      }
+
+      // Default insight if no data available
+      if (insights.isEmpty) {
+        insights.add({
+          'icon': Icons.tips_and_updates,
+          'color': Colors.blue,
+          'title': 'Welcome to AgriBase',
+          'message':
+              'Enable location access to get personalized farming insights.',
+          'severity': 'info',
+        });
+      }
+
+      if (mounted) {
+        setState(() {
+          _dailyInsights = insights;
+          _currentInsightIndex = 0;
+        });
+        debugPrint('Insights generated: ${insights.length} insights');
+      }
+    } catch (e) {
+      debugPrint('Error generating insights: $e');
+      if (mounted) {
+        setState(() {
+          _dailyInsights = [
+            {
+              'icon': Icons.error,
+              'color': Colors.red,
+              'title': 'Error Loading Data',
+              'message':
+                  'Failed to load insights. Please check your location and try again.',
+              'severity': 'warning',
+            },
+          ];
+          _currentInsightIndex = 0;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer5<
+      AuthProvider,
+      LocalizationProvider,
+      WeatherProvider,
+      SoilProvider,
+      LocationProvider
+    >(
+      builder:
+          (
+            context,
+            authProvider,
+            localizationProvider,
+            weatherProvider,
+            soilProvider,
+            locationProvider,
+            child,
+          ) {
+            final isAuthenticated = authProvider.isAuthenticated;
+            final locale = localizationProvider.locale;
+            final theme = Theme.of(context);
+            final isBangla = locale.languageCode == 'bn';
+
+            return Scaffold(
+              appBar: AppBar(
+                backgroundColor: theme.colorScheme.primary,
+                elevation: 0,
+                centerTitle: true,
+                leading: IconButton(
+                  icon: Icon(Icons.menu, color: theme.colorScheme.onPrimary),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            const SettingsScreen(),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                              const begin = Offset(1.0, 0.0);
+                              const end = Offset.zero;
+                              const curve = Curves.ease;
+                              var tween = Tween(
+                                begin: begin,
+                                end: end,
+                              ).chain(CurveTween(curve: curve));
+                              return SlideTransition(
+                                position: animation.drive(tween),
+                                child: child,
+                              );
+                            },
+                      ),
+                    );
+                  },
+                ),
+                title: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.eco,
+                      color: theme.colorScheme.onPrimary,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      "AgriBase",
+                      style: TextStyle(
+                        color: theme.colorScheme.onPrimary,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                actions: [
+                  if (isAuthenticated)
+                    IconButton(
+                      icon: Icon(
+                        Icons.logout,
+                        color: theme.colorScheme.onPrimary,
+                      ),
+                      onPressed: () =>
+                          _showSignOutDialog(context, authProvider),
+                    ),
+                ],
+              ),
+              body: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Hero Section with greeting
+                    _buildHeroSection(
+                      context,
+                      isAuthenticated,
+                      locale,
+                      authProvider,
+                    ),
+
+                    // Daily Insight Widget (AI-powered tip)
+                    if (_insightsLoading)
+                      const Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    else if (_dailyInsights.isNotEmpty)
+                      _buildDailyInsightCard(context, isBangla),
+
+                    // System Status Badges
+                    _buildStatusBadges(
+                      context,
+                      isBangla,
+                      weatherProvider,
+                      soilProvider,
+                      locationProvider,
+                    ),
+
+                    // Weather widget (only for authenticated users)
+                    if (isAuthenticated)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: WeatherWidget(),
+                      ),
+
+                    // Quick Actions Grid
+                    _buildQuickActionsSection(context, isBangla),
+
+                    // App Overview Section
+                    _buildAppOverviewSection(context),
+
+                    // Contact Section
+                    _buildContactSection(context),
+                  ],
+                ),
+              ),
+            );
+          },
     );
   }
 
@@ -117,6 +380,7 @@ class HomeScreen extends StatelessWidget {
     Locale locale,
     AuthProvider authProvider,
   ) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(24.0),
       decoration: const BoxDecoration(
@@ -137,7 +401,7 @@ class HomeScreen extends StatelessWidget {
                 ? '${Translations.translate(locale, 'helloUser')} ${authProvider.username ?? 'User'}'
                 : Translations.translate(locale, 'welcomeToAgriBase'),
             style: const TextStyle(
-              fontSize: 32,
+              fontSize: 28,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -145,9 +409,9 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             Translations.translate(locale, 'appDescription'),
-            style: TextStyle(fontSize: 18, color: Colors.white70, height: 1.4),
+            style: TextStyle(fontSize: 16, color: Colors.white70, height: 1.4),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           if (!isAuthenticated)
             ElevatedButton.icon(
               onPressed: () => _showAuthPrompt(context),
@@ -159,8 +423,8 @@ class HomeScreen extends StatelessWidget {
                 backgroundColor: Colors.white,
                 foregroundColor: Theme.of(context).colorScheme.primary,
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
+                  horizontal: 20,
+                  vertical: 10,
                 ),
               ),
             ),
@@ -169,101 +433,425 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBangladeshiFarmingSection(BuildContext context) {
-    return Consumer<LocalizationProvider>(
-      builder: (context, localizationProvider, child) {
-        final locale = localizationProvider.locale;
-        final theme = Theme.of(context);
-        final isDark = theme.brightness == Brightness.dark;
+  Widget _buildDailyInsightCard(BuildContext context, bool isBangla) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final insight = _dailyInsights[_currentInsightIndex];
 
-        return Container(
-          padding: const EdgeInsets.all(24.0),
-          color: isDark ? theme.colorScheme.surface : Colors.white,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                Translations.translate(locale, 'bangladeshiAgriculture'),
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                Translations.translate(locale, 'bangladeshiFarmingDescription'),
-                style: TextStyle(
-                  fontSize: 16,
-                  color: theme.colorScheme.onSurface,
-                  height: 1.6,
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Placeholder for farming images - you can add actual images later
-              SizedBox(
-                height: 200,
-                child: Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      'assets/images/farmer.jpg',
-                      height: 180,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+    Color bgColor;
+    Color borderColor;
+    switch (insight['severity']) {
+      case 'warning':
+        bgColor = Colors.amber.withValues(alpha: 0.1);
+        borderColor = Colors.amber;
+        break;
+      case 'tip':
+        bgColor = Colors.green.withValues(alpha: 0.1);
+        borderColor = Colors.green;
+        break;
+      default:
+        bgColor = Colors.blue.withValues(alpha: 0.1);
+        borderColor = Colors.blue;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isDark ? theme.colorScheme.surfaceContainerHighest : bgColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: borderColor.withValues(alpha: 0.5),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: borderColor.withValues(alpha: 0.2),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: (insight['color'] as Color).withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    insight['icon'] as IconData,
+                    color: insight['color'] as Color,
+                    size: 24,
                   ),
                 ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.auto_awesome,
+                            size: 14,
+                            color: const Color(0xFF1A237E),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            isBangla ? 'দৈনিক ইনসাইট' : 'Daily Insight',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: const Color(0xFF1A237E),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        insight['title'] as String,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.refresh, size: 20),
+                  onPressed: () {
+                    setState(() {
+                      _currentInsightIndex =
+                          (_currentInsightIndex + 1) % _dailyInsights.length;
+                    });
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              insight['message'] as String,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
+                height: 1.4,
               ),
-            ],
-          ),
-        );
-      },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _buildAppGoalSection() {
-    return Consumer<LocalizationProvider>(
-      builder: (context, localizationProvider, child) {
-        final theme = Theme.of(context);
-        final locale = localizationProvider.locale;
-        return Container(
-          padding: const EdgeInsets.all(24.0),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
+  Widget _buildStatusBadges(
+    BuildContext context,
+    bool isBangla,
+    WeatherProvider weatherProvider,
+    SoilProvider soilProvider,
+    LocationProvider locationProvider,
+  ) {
+    final theme = Theme.of(context);
+    final weather = weatherProvider.weatherData;
+    final soil = soilProvider.soilData;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Location Name
+          if (locationProvider.districtName != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(
+                '📍 ${locationProvider.districtName}',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          Text(
+            isBangla ? 'সিস্টেম স্ট্যাটাস' : 'System Status',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          const SizedBox(height: 8),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                // Weather Status
+                if (weather != null && weather.dailyForecasts.isNotEmpty)
+                  _buildStatusChip(
+                    context,
+                    Icons.cloud,
+                    isBangla ? 'আবহাওয়া' : 'Weather',
+                    weather.dailyForecasts.first.getWeatherDescription(),
+                    _getWeatherColor(weather.dailyForecasts.first.weatherCode),
+                  ),
+                const SizedBox(width: 8),
+                // Soil Moisture (based on soil type)
+                if (soil != null)
+                  _buildStatusChip(
+                    context,
+                    Icons.water,
+                    isBangla ? 'মাটির ধরণ' : 'Soil Type',
+                    soil.soilType,
+                    Colors.green,
+                  ),
+                const SizedBox(width: 8),
+                // Pest Risk (based on weather)
+                if (weather != null && weather.dailyForecasts.isNotEmpty)
+                  _buildStatusChip(
+                    context,
+                    Icons.bug_report,
+                    isBangla ? 'কীট ঝুঁকি' : 'Pest Risk',
+                    _getPestRisk(weather.dailyForecasts.first, isBangla),
+                    _getPestRiskColor(weather.dailyForecasts.first),
+                  ),
+                const SizedBox(width: 8),
+                // Temperature
+                if (weather?.currentTemp != null && weather!.currentTemp! != 0)
+                  _buildStatusChip(
+                    context,
+                    Icons.thermostat,
+                    isBangla ? 'তাপমাত্রা' : 'Temperature',
+                    '${weather!.currentTemp!.toStringAsFixed(1)}°C',
+                    _getTempColor(weather.currentTemp!),
+                  )
+                else if (weather?.dailyForecasts.isNotEmpty ?? false)
+                  _buildStatusChip(
+                    context,
+                    Icons.thermostat,
+                    isBangla ? 'তাপমাত্রা' : 'Temperature',
+                    '${((weather!.dailyForecasts.first.maxTemp + weather.dailyForecasts.first.minTemp) / 2).toStringAsFixed(1)}°C',
+                    _getTempColor(
+                      (weather.dailyForecasts.first.maxTemp +
+                              weather.dailyForecasts.first.minTemp) /
+                          2,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getWeatherColor(int weatherCode) {
+    if (weatherCode >= 61 && weatherCode <= 67) return Colors.blue; // Rain
+    if (weatherCode >= 71 && weatherCode <= 77) return Colors.blueGrey; // Snow
+    if (weatherCode >= 95 && weatherCode <= 99) {
+      return Colors.red; // Thunderstorm
+    }
+    return Colors.green; // Clear/Cloudy
+  }
+
+  String _getPestRisk(dynamic forecast, bool isBangla) {
+    final temp = forecast.maxTemp;
+    final precip = forecast.precipitationProbability;
+
+    if (temp > 28 && precip > 60) {
+      return isBangla ? 'উচ্চ' : 'High';
+    } else if (temp > 25 && precip > 40) {
+      return isBangla ? 'মাঝারি' : 'Medium';
+    }
+    return isBangla ? 'নিম্ন' : 'Low';
+  }
+
+  Color _getPestRiskColor(dynamic forecast) {
+    final temp = forecast.maxTemp;
+    final precip = forecast.precipitationProbability;
+
+    if (temp > 28 && precip > 60) return Colors.red;
+    if (temp > 25 && precip > 40) return Colors.orange;
+    return Colors.green;
+  }
+
+  Color _getTempColor(double temp) {
+    if (temp > 35) return Colors.red;
+    if (temp > 30) return Colors.orange;
+    if (temp < 15) return Colors.blue;
+    return Colors.green;
+  }
+
+  Widget _buildStatusChip(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+    Color color,
+  ) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: isDark
+            ? theme.colorScheme.surfaceContainerHighest
+            : color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 6),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.visibility, size: 48, color: Colors.white),
-              const SizedBox(height: 16),
               Text(
-                Translations.translate(locale, 'ourMission'),
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
-                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
               Text(
-                Translations.translate(locale, 'missionStatement'),
-                style: const TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                  height: 1.6,
+                value,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: color,
                 ),
-                textAlign: TextAlign.center,
               ),
             ],
           ),
-        );
-      },
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActionsSection(BuildContext context, bool isBangla) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.flash_on, color: theme.colorScheme.primary, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                isBangla ? 'দ্রুত কার্যক্রম' : 'Quick Actions',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 3,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1.0,
+            children: [
+              _buildQuickActionTile(
+                context,
+                Icons.calculate,
+                isBangla ? 'সার' : 'Fertilizer',
+                Colors.green,
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const CalculatorScreen(mode: 'fertilizer'),
+                  ),
+                ),
+              ),
+              _buildQuickActionTile(
+                context,
+                Icons.grain,
+                isBangla ? 'বীজ' : 'Seed',
+                Colors.amber.shade700,
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const CalculatorScreen(mode: 'seed'),
+                  ),
+                ),
+              ),
+              _buildQuickActionTile(
+                context,
+                Icons.psychology,
+                isBangla ? 'AI হাব' : 'AI Hub',
+                const Color(0xFF1A237E),
+                () {
+                  // Navigate to AI Hub tab
+                  // This will be handled by parent navigation
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActionTile(
+    BuildContext context,
+    IconData icon,
+    String label,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: isDark
+              ? theme.colorScheme.surfaceContainerHighest
+              : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: color, size: 24),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -273,6 +861,7 @@ class HomeScreen extends StatelessWidget {
         final locale = localizationProvider.locale;
         final theme = Theme.of(context);
         final isDark = theme.brightness == Brightness.dark;
+        final isBangla = locale.languageCode == 'bn';
 
         return Container(
           padding: const EdgeInsets.all(24.0),
@@ -283,20 +872,20 @@ class HomeScreen extends StatelessWidget {
               Text(
                 Translations.translate(locale, 'whatAgribaseOffers'),
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.primary,
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               _buildOverviewCard(
                 context: context,
                 locale: locale,
-                icon: Icons.analytics,
+                icon: Icons.psychology,
                 titleKey: 'smartAnalytics',
                 descKey: 'smartAnalyticsDesc',
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               _buildOverviewCard(
                 context: context,
                 locale: locale,
@@ -304,21 +893,13 @@ class HomeScreen extends StatelessWidget {
                 titleKey: 'regionalInsights',
                 descKey: 'regionalInsightsDesc',
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               _buildOverviewCard(
                 context: context,
                 locale: locale,
                 icon: Icons.eco,
                 titleKey: 'sustainablePractices',
                 descKey: 'sustainablePracticesDesc',
-              ),
-              const SizedBox(height: 16),
-              _buildOverviewCard(
-                context: context,
-                locale: locale,
-                icon: Icons.trending_up,
-                titleKey: 'marketIntelligence',
-                descKey: 'marketIntelligenceDesc',
               ),
             ],
           ),

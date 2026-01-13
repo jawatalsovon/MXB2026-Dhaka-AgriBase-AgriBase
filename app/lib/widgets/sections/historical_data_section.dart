@@ -16,7 +16,6 @@ class _HistoricalDataSectionState extends State<HistoricalDataSection> {
   final CropsDatabaseService _cropsService = CropsDatabaseService();
 
   List<String> _crops = [];
-  List<String> _filteredCrops = [];
   List<String> _years = [];
   String? _selectedCrop;
   String? _selectedYear;
@@ -42,7 +41,6 @@ class _HistoricalDataSectionState extends State<HistoricalDataSection> {
       if (crops.isNotEmpty) {
         setState(() {
           _crops = crops;
-          _filteredCrops = crops;
           _selectedCrop = crops.first;
         });
         await _loadYearsForCrop(crops.first);
