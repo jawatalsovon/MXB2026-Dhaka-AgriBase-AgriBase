@@ -380,7 +380,6 @@ class _HomeScreenState extends State<HomeScreen> {
     Locale locale,
     AuthProvider authProvider,
   ) {
-    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(24.0),
       decoration: const BoxDecoration(
@@ -623,7 +622,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     context,
                     Icons.thermostat,
                     isBangla ? 'তাপমাত্রা' : 'Temperature',
-                    '${weather!.currentTemp!.toStringAsFixed(1)}°C',
+                    '${weather.currentTemp!.toStringAsFixed(1)}°C',
                     _getTempColor(weather.currentTemp!),
                   )
                 else if (weather?.dailyForecasts.isNotEmpty ?? false)
@@ -734,7 +733,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildQuickActionsSection(BuildContext context, bool isBangla) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -861,7 +859,6 @@ class _HomeScreenState extends State<HomeScreen> {
         final locale = localizationProvider.locale;
         final theme = Theme.of(context);
         final isDark = theme.brightness == Brightness.dark;
-        final isBangla = locale.languageCode == 'bn';
 
         return Container(
           padding: const EdgeInsets.all(24.0),

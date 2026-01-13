@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/localization_provider.dart';
 import '../services/fertilizer_service.dart';
 
 class CalculatorScreen extends StatefulWidget {
@@ -65,21 +67,30 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.primary,
-        title: Text(
-          widget.mode == 'seed' ? 'Seed Calculator' : 'Fertilizer Calculator',
-        ),
-        centerTitle: true,
-      ),
-      body: widget.mode == 'seed'
-          ? _buildSeedCalculatorWithLabel(theme)
-          : _buildFertilizerCalculatorWithLabel(theme),
+    return Consumer<LocalizationProvider>(
+      builder: (context, localizationProvider, child) {
+        final locale = localizationProvider.locale;
+        final isBangla = locale.languageCode == 'bn';
+
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: theme.colorScheme.primary,
+            title: Text(
+              widget.mode == 'seed'
+                  ? (isBangla ? 'বীজ ক্যালকুলেটর' : 'Seed Calculator')
+                  : (isBangla ? 'সার ক্যালকুলেটর' : 'Fertilizer Calculator'),
+            ),
+            centerTitle: true,
+          ),
+          body: widget.mode == 'seed'
+              ? _buildSeedCalculatorWithLabel(theme, isBangla)
+              : _buildFertilizerCalculatorWithLabel(theme, isBangla),
+        );
+      },
     );
   }
 
-  Widget _buildFertilizerCalculatorWithLabel(ThemeData theme) {
+  Widget _buildFertilizerCalculatorWithLabel(ThemeData theme, bool isBangla) {
     return Column(
       children: [
         Container(
@@ -96,19 +107,52 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Fertilizer Calculator is under development. Results are for reference only.',
+                  isBangla
+                      ? 'সার ক্যালকুলেটর উন্নয়নাধীন। ফলাফল শুধুমাত্র রেফারেন্সের জন্য।'
+                      : 'Fertilizer Calculator is under development. Results are for reference only.',
                   style: TextStyle(color: Colors.orange[900], fontSize: 12),
                 ),
               ),
             ],
           ),
         ),
-        Expanded(child: _buildFertilizerCalculator(theme)),
+        Expanded(child: _buildFertilizerCalculator(theme, isBangla)),
       ],
     );
   }
 
-  Widget _buildFertilizerCalculator(ThemeData theme) {
+  Widget _buildSeedCalculatorWithLabel(ThemeData theme, bool isBangla) {
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.orange[50],
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.orange[200]!),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.info, color: Colors.orange[700]),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  isBangla
+                      ? 'বীজ ক্যালকুলেটর উন্নয়নাধীন। ফলাফল শুধুমাত্র রেফারেন্সের জন্য।'
+                      : 'Seed Calculator is under development. Results are for reference only.',
+                  style: TextStyle(color: Colors.orange[900], fontSize: 12),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(child: _buildSeedCalculator(theme, isBangla)),
+      ],
+    );
+  }
+
+  Widget _buildFertilizerCalculator(ThemeData theme, bool isBangla) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -123,7 +167,9 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               border: Border.all(color: Colors.blue[200]!),
             ),
             child: Text(
-              'Based on Bangladesh Agricultural Research Council (BARC) recommendations',
+              isBangla
+                  ? 'বাংলাদেশ কৃষি গবেষণা কাউন্সিল (BARC) সুপারিশের উপর ভিত্তি করে'
+                  : 'Based on Bangladesh Agricultural Research Council (BARC) recommendations',
               style: theme.textTheme.labelSmall?.copyWith(
                 color: Colors.blue[900],
               ),
@@ -133,7 +179,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
           // Crop Selection
           Text(
-            'Select Crop',
+            isBangla ? 'ফসল নির্বাচন করুন' : 'Select Crop',
             style: theme.textTheme.labelLarge?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -357,44 +403,13 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     );
   }
 
-  Widget _buildSeedCalculatorWithLabel(ThemeData theme) {
-    return Column(
-      children: [
-        Container(
-          margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.orange[50],
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.orange[200]!),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.info, color: Colors.orange[700]),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Seed Calculator is under development. Results are for reference only.',
-                  style: TextStyle(color: Colors.orange[900], fontSize: 12),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Expanded(child: _buildSeedCalculator(theme)),
-      ],
-    );
-  }
-
-  Widget _buildSeedCalculator(ThemeData theme) {
-    const seedRates = {
+  Widget _buildSeedCalculator(ThemeData theme, bool isBangla) {
+    final seedRateCrops = {
       'rice': 40,
-      'wheat': 100,
-      'maize': 20,
-      'lentil': 40,
-      'potato': 2500,
-      'tomato': 600,
-      'onion': 8,
+      'wheat': 125,
+      'corn': 20,
+      'lentil': 50,
+      'chickpea': 90,
     };
 
     return SingleChildScrollView(
@@ -402,87 +417,138 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Info Box
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.blue[50],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.blue[200]!),
+            ),
+            child: Text(
+              isBangla
+                  ? 'বাংলাদেশ কৃষি গবেষণা কাউন্সিল (BARC) সুপারিশের উপর ভিত্তি করে'
+                  : 'Based on Bangladesh Agricultural Research Council (BARC) recommendations',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: Colors.blue[900],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Crop Selection
           Text(
-            'Seed Requirement Calculator',
+            isBangla ? 'ফসল নির্বাচন করুন' : 'Select Crop',
+            style: theme.textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          DropdownButtonFormField<String>(
+            value: 'rice',
+            decoration: const InputDecoration(border: OutlineInputBorder()),
+            items: seedRateCrops.keys
+                .map((crop) => DropdownMenuItem(value: crop, child: Text(crop)))
+                .toList(),
+            onChanged: (value) {
+              if (value != null) {
+                setState(() {
+                  seedRatePerHectare = seedRateCrops[value]?.toDouble() ?? 40;
+                });
+              }
+            },
+          ),
+          const SizedBox(height: 20),
+
+          // Area Input
+          Text(
+            isBangla ? 'খামার এলাকা' : 'Farm Area',
+            style: theme.textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: TextField(
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    hintText: isBangla ? 'এলাকা প্রবেশ করুন' : 'Enter area',
+                    labelText: isBangla ? 'এলাকা' : 'Area',
+                  ),
+                  keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedAreaSeed =
+                          double.tryParse(value) ?? selectedAreaSeed;
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                flex: 1,
+                child: DropdownButtonFormField<String>(
+                  initialValue: 'hectare',
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: 'hectare', child: Text('ha')),
+                    DropdownMenuItem(value: 'bigha', child: Text('bigha')),
+                    DropdownMenuItem(value: 'acre', child: Text('acre')),
+                    DropdownMenuItem(value: 'decimal', child: Text('decimal')),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        selectedAreaSeed = _areaInHectares(
+                          selectedAreaSeed,
+                          value,
+                        );
+                      });
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          // Results
+          Text(
+            isBangla ? 'বীজের প্রয়োজন' : 'Seed Requirement',
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
 
-          Text('Select Crop', style: theme.textTheme.labelLarge),
-          const SizedBox(height: 8),
-          DropdownButton<String>(
-            value: selectedCrop,
-            onChanged: (value) {
-              if (value != null && seedRates.containsKey(value)) {
-                setState(() {
-                  selectedCrop = value;
-                  seedRatePerHectare = seedRates[value]!.toDouble();
-                });
-              }
-            },
-            isExpanded: true,
-            items: seedRates.keys
-                .map((crop) => DropdownMenuItem(value: crop, child: Text(crop)))
-                .toList(),
-          ),
-          const SizedBox(height: 20),
-
-          Text('Farm Area', style: theme.textTheme.labelLarge),
-          const SizedBox(height: 8),
-          TextField(
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Enter area in hectares',
-              labelText: 'Area (hectares)',
-            ),
-            keyboardType: TextInputType.number,
-            onChanged: (value) {
-              setState(() {
-                selectedAreaSeed = double.tryParse(value) ?? 0;
-              });
-            },
-          ),
-          const SizedBox(height: 24),
-
-          // Result
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.green[50],
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Colors.green[200]!),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Seed Needed',
+                  isBangla ? 'মোট বীজের প্রয়োজন' : 'Total Seed Needed',
                   style: theme.textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: Colors.green[900],
                   ),
                 ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Rate: ${seedRatePerHectare.toStringAsFixed(0)} kg/ha',
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    Text(
-                      'Area: ${selectedAreaSeed.toStringAsFixed(2)} ha',
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 Text(
                   '${(seedRatePerHectare * selectedAreaSeed).toStringAsFixed(2)} kg',
-                  style: theme.textTheme.headlineMedium?.copyWith(
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    color: Colors.green[900],
                     fontWeight: FontWeight.bold,
-                    color: Colors.green[700],
                   ),
                 ),
               ],

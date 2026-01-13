@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
+import '../providers/localization_provider.dart';
 import '../services/disease_service.dart';
 import '../providers/disease_detection_provider.dart';
 import 'assistant_screen.dart';
@@ -69,15 +70,18 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.primary,
-        title: const Text('🔬 Disease Scanner'),
-        elevation: 0,
-      ),
-      body: Consumer<DiseaseDetectionProvider>(
-        builder: (context, provider, _) {
-          return SingleChildScrollView(
+    return Consumer2<LocalizationProvider, DiseaseDetectionProvider>(
+      builder: (context, localizationProvider, provider, _) {
+        final locale = localizationProvider.locale;
+        final isBangla = locale.languageCode == 'bn';
+
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: theme.colorScheme.primary,
+            title: Text(isBangla ? '🔬 রোগ স্ক্যানার' : '🔬 Disease Scanner'),
+            elevation: 0,
+          ),
+          body: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -95,7 +99,7 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'How to use:',
+                          isBangla ? 'কিভাবে ব্যবহার করবেন:' : 'How to use:',
                           style: theme.textTheme.labelLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Colors.blue[900],
@@ -103,10 +107,9 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '1. Take a clear photo of the affected leaf\n'
-                          '2. Ensure good lighting\n'
-                          '3. Focus on the disease symptoms\n'
-                          '4. Upload the image for analysis',
+                          isBangla
+                              ? '১. প্রভাবিত পাতার পরিষ্কার ছবি তুলুন\n২. ভাল আলো নিশ্চিত করুন\n৩. রোগের লক্ষণগুলিতে ফোকাস করুন\n৪. বিশ্লেষণের জন্য ছবি আপলোড করুন'
+                              : '1. Take a clear photo of the affected leaf\n2. Ensure good lighting\n3. Focus on the disease symptoms\n4. Upload the image for analysis',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: Colors.blue[800],
                           ),
@@ -121,7 +124,7 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
                     ElevatedButton.icon(
                       onPressed: () => _pickImage(ImageSource.camera),
                       icon: const Icon(Icons.camera_alt),
-                      label: const Text('Take a Photo'),
+                      label: Text(isBangla ? 'ছবি তুলুন' : 'Take a Photo'),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         backgroundColor: theme.colorScheme.primary,
@@ -132,7 +135,11 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
                     ElevatedButton.icon(
                       onPressed: () => _pickImage(ImageSource.gallery),
                       icon: const Icon(Icons.photo_library),
-                      label: const Text('Choose from Gallery'),
+                      label: Text(
+                        isBangla
+                            ? 'গ্যালারি থেকে নির্বাচন করুন'
+                            : 'Choose from Gallery',
+                      ),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         backgroundColor: theme.colorScheme.secondary,
@@ -170,7 +177,9 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
                             const CircularProgressIndicator(),
                             const SizedBox(height: 12),
                             Text(
-                              'Analyzing image...',
+                              isBangla
+                                  ? 'ছবি বিশ্লেষণ করা হচ্ছে...'
+                                  : 'Analyzing image...',
                               style: theme.textTheme.bodySmall,
                             ),
                           ],
@@ -196,7 +205,9 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
                       ElevatedButton.icon(
                         onPressed: () => provider.reset(),
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Try Again'),
+                        label: Text(
+                          isBangla ? 'আবার চেষ্টা করুন' : 'Try Again',
+                        ),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
@@ -208,6 +219,7 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
                         provider.detectedDisease!,
                         provider.confidence,
                         theme,
+                        isBangla,
                       ),
                       const SizedBox(height: 16),
 
@@ -216,13 +228,18 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
                         context,
                         provider.detectedDisease!,
                         theme,
+                        isBangla,
                       ),
                       const SizedBox(height: 16),
 
                       ElevatedButton.icon(
                         onPressed: () => provider.reset(),
                         icon: const Icon(Icons.add_a_photo),
-                        label: const Text('Scan Another Image'),
+                        label: Text(
+                          isBangla
+                              ? 'অন্য ছবি স্ক্যান করুন'
+                              : 'Scan Another Image',
+                        ),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
@@ -233,7 +250,9 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
                         onPressed: () =>
                             _analyzeImage(provider.selectedImagePath!),
                         icon: const Icon(Icons.search),
-                        label: const Text('Analyze Image'),
+                        label: Text(
+                          isBangla ? 'ছবি বিশ্লেষণ করুন' : 'Analyze Image',
+                        ),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           backgroundColor: theme.colorScheme.primary,
@@ -245,9 +264,9 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
                 ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -256,13 +275,16 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
     String diseaseKey,
     double confidence,
     ThemeData theme,
+    bool isBangla,
   ) {
     final disease = DiseaseDatabase.getDiseaseInfo(diseaseKey);
 
     if (disease == null) {
       return Center(
         child: Text(
-          'Disease information not found',
+          isBangla
+              ? 'রোগের তথ্য পাওয়া যায়নি'
+              : 'Disease information not found',
           style: theme.textTheme.bodyMedium,
         ),
       );
@@ -280,6 +302,8 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
       default:
         severityColor = Colors.green;
     }
+
+    final diseaseName = isBangla ? disease.diseaseNameBn : disease.diseaseName;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -335,9 +359,9 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
                           size: 12,
                         ),
                         const SizedBox(width: 4),
-                        const Text(
-                          'AI Diagnosis',
-                          style: TextStyle(
+                        Text(
+                          isBangla ? 'এআই নির্ণয়' : 'AI Diagnosis',
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
@@ -388,7 +412,7 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
 
               // Disease Name
               Text(
-                disease.diseaseName,
+                diseaseName,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Colors.red[900],
@@ -413,7 +437,7 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Confidence Score',
+                          isBangla ? 'আত্মবিশ্বাসের স্কোর' : 'Confidence Score',
                           style: theme.textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -451,10 +475,16 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
                     const SizedBox(height: 6),
                     Text(
                       confidence > 0.8
-                          ? 'High confidence - Likely accurate'
+                          ? (isBangla
+                                ? 'উচ্চ আত্মবিশ্বাস - সম্ভবত সঠিক'
+                                : 'High confidence - Likely accurate')
                           : confidence > 0.6
-                          ? 'Medium confidence - May need verification'
-                          : 'Low confidence - Consider expert consultation',
+                          ? (isBangla
+                                ? 'মাঝারি আত্মবিশ্বাস - যাচাইয়ের প্রয়োজন হতে পারে'
+                                : 'Medium confidence - May need verification')
+                          : (isBangla
+                                ? 'কম আত্মবিশ্বাস - বিশেষজ্ঞের পরামর্শ বিবেচনা করুন'
+                                : 'Low confidence - Consider expert consultation'),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurface.withValues(
                           alpha: 0.6,
@@ -472,7 +502,7 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
 
         // Disease Details
         _buildDetailSection(
-          '📋 Symptoms',
+          isBangla ? '📋 লক্ষণ' : '📋 Symptoms',
           disease.symptoms,
           Colors.orange,
           theme,
@@ -480,7 +510,7 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
         const SizedBox(height: 12),
 
         _buildDetailSection(
-          '💊 Treatment Options',
+          isBangla ? '💊 চিকিৎসা বিকল্প' : '💊 Treatment Options',
           disease.treatments,
           Colors.green,
           theme,
@@ -488,7 +518,7 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
         const SizedBox(height: 12),
 
         _buildDetailSection(
-          '🛡️ Prevention Methods',
+          isBangla ? '🛡️ প্রতিরোধ পদ্ধতি' : '🛡️ Prevention Methods',
           disease.prevention,
           Colors.blue,
           theme,
@@ -501,18 +531,21 @@ class _DiseaseScannerScreenState extends State<DiseaseScannerScreen> {
     BuildContext context,
     String diseaseKey,
     ThemeData theme,
+    bool isBangla,
   ) {
     final disease = DiseaseDatabase.getDiseaseInfo(diseaseKey);
-    final diseaseName = disease?.diseaseName ?? diseaseKey;
+    final diseaseName = isBangla
+        ? (disease?.diseaseNameBn ?? diseaseKey)
+        : (disease?.diseaseName ?? diseaseKey);
 
     return GestureDetector(
       onTap: () {
+        final query = isBangla
+            ? 'আমি আমার ফসলে $diseaseName খুঁজে পেয়েছি। আমি এটি কীভাবে চিকিৎসা করব?'
+            : 'I found $diseaseName on my crop. How do I treat it?';
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => AssistantScreen(
-              initialQuery:
-                  'I found $diseaseName on my crop. How do I treat it?',
-            ),
+            builder: (_) => AssistantScreen(initialQuery: query),
           ),
         );
       },

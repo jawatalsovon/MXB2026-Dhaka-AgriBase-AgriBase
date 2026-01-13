@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/localization_provider.dart';
 import 'home_content_screen.dart';
 import 'ai_hub_screen.dart';
 import 'insights_screen.dart';
@@ -27,113 +29,128 @@ class _AgriBaseHomeScreenState extends State<AgriBaseHomeScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Scaffold(
-      body: IndexedStack(index: _selectedNavIndex, children: _screens),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: const Color(0xFF1A237E), // Deep indigo for AI
-        onPressed: () {
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (_) => const AssistantScreen()));
-        },
-        icon: const Icon(Icons.auto_awesome, color: Colors.white),
-        label: const Text(
-          'Ask AI',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: NavigationBar(
-          selectedIndex: _selectedNavIndex,
-          backgroundColor: isDark ? theme.colorScheme.surface : Colors.white,
-          indicatorColor: theme.colorScheme.primary.withValues(alpha: 0.2),
-          onDestinationSelected: (index) {
-            setState(() {
-              _selectedNavIndex = index;
-            });
-          },
-          destinations: [
-            NavigationDestination(
-              icon: Icon(
-                Icons.dashboard_outlined,
-                color: _selectedNavIndex == 0
-                    ? theme.colorScheme.primary
-                    : isDark
-                    ? Colors.grey[400]
-                    : Colors.grey[600],
+    return Consumer<LocalizationProvider>(
+      builder: (context, localizationProvider, child) {
+        final locale = localizationProvider.locale;
+        final isBangla = locale.languageCode == 'bn';
+
+        return Scaffold(
+          body: IndexedStack(index: _selectedNavIndex, children: _screens),
+          floatingActionButton: FloatingActionButton.extended(
+            backgroundColor: const Color(0xFF1A237E), // Deep indigo for AI
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const AssistantScreen()),
+              );
+            },
+            icon: const Icon(Icons.auto_awesome, color: Colors.white),
+            label: Text(
+              isBangla ? 'এআই জিজ্ঞাসা করুন' : 'Ask AI',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
               ),
-              selectedIcon: Icon(
-                Icons.dashboard,
-                color: theme.colorScheme.primary,
-              ),
-              label: 'Home',
             ),
-            NavigationDestination(
-              icon: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
+          ),
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
                 ),
-                child: Icon(
-                  Icons.psychology_outlined,
-                  color: _selectedNavIndex == 1
-                      ? Colors.white
-                      : isDark
-                      ? Colors.grey[400]
-                      : const Color.fromARGB(255, 235, 192, 0),
+              ],
+            ),
+            child: NavigationBar(
+              selectedIndex: _selectedNavIndex,
+              backgroundColor: isDark
+                  ? theme.colorScheme.surface
+                  : Colors.white,
+              indicatorColor: theme.colorScheme.primary.withValues(alpha: 0.2),
+              onDestinationSelected: (index) {
+                setState(() {
+                  _selectedNavIndex = index;
+                });
+              },
+              destinations: [
+                NavigationDestination(
+                  icon: Icon(
+                    Icons.dashboard_outlined,
+                    color: _selectedNavIndex == 0
+                        ? theme.colorScheme.primary
+                        : isDark
+                        ? Colors.grey[400]
+                        : Colors.grey[600],
+                  ),
+                  selectedIcon: Icon(
+                    Icons.dashboard,
+                    color: theme.colorScheme.primary,
+                  ),
+                  label: isBangla ? 'হোম' : 'Home',
                 ),
-              ),
-              selectedIcon: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
+                NavigationDestination(
+                  icon: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.psychology_outlined,
+                      color: _selectedNavIndex == 1
+                          ? Colors.white
+                          : isDark
+                          ? Colors.grey[400]
+                          : const Color.fromARGB(255, 235, 192, 0),
+                    ),
+                  ),
+                  selectedIcon: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.psychology_outlined,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  label: isBangla ? 'এআই হাব' : 'AI Hub',
                 ),
-                child: Icon(Icons.psychology_outlined, color: theme.colorScheme.primary,),
-              ),
-              label: 'AI Hub',
+                NavigationDestination(
+                  icon: Icon(
+                    Icons.insights_outlined,
+                    color: _selectedNavIndex == 2
+                        ? theme.colorScheme.primary
+                        : isDark
+                        ? Colors.grey[400]
+                        : Colors.grey[600],
+                  ),
+                  selectedIcon: Icon(
+                    Icons.insights,
+                    color: theme.colorScheme.primary,
+                  ),
+                  label: isBangla ? 'অন্তর্দৃষ্টি' : 'Insights',
+                ),
+                NavigationDestination(
+                  icon: Icon(
+                    Icons.build_circle_outlined,
+                    color: _selectedNavIndex == 3
+                        ? theme.colorScheme.primary
+                        : isDark
+                        ? Colors.grey[400]
+                        : Colors.grey[600],
+                  ),
+                  selectedIcon: Icon(
+                    Icons.build_circle,
+                    color: theme.colorScheme.primary,
+                  ),
+                  label: isBangla ? 'টুলস' : 'Tools',
+                ),
+              ],
             ),
-            NavigationDestination(
-              icon: Icon(
-                Icons.insights_outlined,
-                color: _selectedNavIndex == 2
-                    ? theme.colorScheme.primary
-                    : isDark
-                    ? Colors.grey[400]
-                    : Colors.grey[600],
-              ),
-              selectedIcon: Icon(
-                Icons.insights,
-                color: theme.colorScheme.primary,
-              ),
-              label: 'Insights',
-            ),
-            NavigationDestination(
-              icon: Icon(
-                Icons.build_circle_outlined,
-                color: _selectedNavIndex == 3
-                    ? theme.colorScheme.primary
-                    : isDark
-                    ? Colors.grey[400]
-                    : Colors.grey[600],
-              ),
-              selectedIcon: Icon(
-                Icons.build_circle,
-                color: theme.colorScheme.primary,
-              ),
-              label: 'Tools',
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
