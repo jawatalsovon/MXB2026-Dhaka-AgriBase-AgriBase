@@ -445,7 +445,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           ),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            value: 'rice',
+            initialValue: 'rice',
             decoration: const InputDecoration(border: OutlineInputBorder()),
             items: seedRateCrops.keys
                 .map((crop) => DropdownMenuItem(value: crop, child: Text(crop)))

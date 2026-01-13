@@ -4,6 +4,7 @@ import 'database_factory_init.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseService {
@@ -42,13 +43,10 @@ class DatabaseService {
       return; // Already initialized
     }
 
-    // Skip file operations on web platform and use in-memory database
     if (kIsWeb) {
-      // For web, do not attempt to open databases since FFI is not available
-      // Web users will get "not initialized" errors but app won't crash
-      debugPrint(
-        'Web platform: database initialization skipped. Using fallback.',
-      );
+      // Web Platform: skip upfront DB loading
+      // Databases will be lazily loaded on first query via _ensureWebDbOpenedFor()
+      debugPrint('Web platform: databases will be loaded on demand.');
       _initialized = true;
       return;
     }
@@ -156,6 +154,9 @@ class DatabaseService {
     String sql, [
     List<dynamic>? arguments,
   ]) async {
+    if (kIsWeb) {
+      await _ensureWebDbOpenedFor('crops.db');
+    }
     return await cropsDb.rawQuery(sql, arguments);
   }
 
@@ -164,6 +165,9 @@ class DatabaseService {
     String sql, [
     List<dynamic>? arguments,
   ]) async {
+    if (kIsWeb) {
+      await _ensureWebDbOpenedFor('attempt.db');
+    }
     return await attemptDb.rawQuery(sql, arguments);
   }
 
@@ -172,7 +176,57 @@ class DatabaseService {
     String sql, [
     List<dynamic>? arguments,
   ]) async {
+    if (kIsWeb) {
+      await _ensureWebDbOpenedFor('predictions.db');
+    }
     return await predictionsDb.rawQuery(sql, arguments);
+  }
+
+  /// Ensure a specific web database is opened (lazy copy from assets if needed)
+  Future<void> _ensureWebDbOpenedFor(String dbName) async {
+    try {
+      if (dbName == 'attempt.db' && _attemptDb != null) return;
+      if (dbName == 'predictions.db' && _predictionsDb != null) return;
+      if (dbName == 'crops.db' && _cropsDb != null) return;
+
+      final factory = databaseFactoryFfiWeb;
+
+      // Try to open existing DB in browser storage
+      try {
+        final db = await factory.openDatabase(dbName);
+        if (dbName == 'attempt.db') _attemptDb = db;
+        if (dbName == 'predictions.db') _predictionsDb = db;
+        if (dbName == 'crops.db') _cropsDb = db;
+        debugPrint('Web: opened existing $dbName');
+        return;
+      } catch (_) {
+        // Not present - proceed to copy from assets
+      }
+
+      // Load asset bytes and write to browser storage
+      try {
+        final assetPath = 'assets/databases/$dbName';
+        debugPrint('Web lazy: copying $assetPath from assets...');
+        final data = await rootBundle.load(assetPath);
+        final bytes = data.buffer.asUint8List();
+
+        try {
+          await (factory as dynamic).writeDatabaseBytes(dbName, bytes);
+        } catch (e) {
+          debugPrint('Web: writeDatabaseBytes not supported: $e');
+        }
+
+        final db = await factory.openDatabase(dbName);
+        if (dbName == 'attempt.db') _attemptDb = db;
+        if (dbName == 'predictions.db') _predictionsDb = db;
+        if (dbName == 'crops.db') _cropsDb = db;
+        debugPrint('Web: Database $dbName ready');
+      } catch (e) {
+        debugPrint('Error ensuring web database $dbName: $e');
+      }
+    } catch (e) {
+      debugPrint('Unexpected error ensuring web DB: $e');
+    }
   }
 
   /// Get all table names from a database

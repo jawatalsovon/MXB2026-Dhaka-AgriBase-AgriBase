@@ -1,8 +1,9 @@
-// Web stub: do not initialize native ffi on web.
-// On web, sqflite uses IndexedDB via the default factory which is automatically set up.
-// Keep this as a no-op to avoid importing native-only packages into web builds.
+// Web initialization: sqflite handles web databases automatically
+// No explicit initialization needed for web platform
 class DatabaseFactoryInitializer {
   static void initialize() {
-    // intentionally empty for web - IndexedDB factory is default
+    // On web, sqflite uses the default factory which works with browser storage
+    // The sqlite3.wasm binary handles the database operations
+    // No explicit FFI initialization needed
   }
 }
