@@ -4,11 +4,14 @@ import 'package:provider/provider.dart';
 import 'settings_screen.dart';
 import 'login_screen.dart';
 import 'calculator_screen.dart';
+import 'my_crops_screen.dart';
 import '../providers/auth_provider.dart';
 import '../providers/localization_provider.dart';
 import '../providers/weather_provider.dart';
 import '../providers/soil_provider.dart';
 import '../providers/location_provider.dart';
+import '../providers/my_crops_provider.dart';
+import '../services/crop_info_service.dart';
 import '../utils/translations.dart';
 import '../widgets/weather_widget.dart';
 
@@ -23,6 +26,11 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> _dailyInsights = [];
   int _currentInsightIndex = 0;
   bool _insightsLoading = true;
+
+  String _capitalizeFirstLetter(String text) {
+    if (text.isEmpty) return text;
+    return text[0].toUpperCase() + text.substring(1);
+  }
 
   @override
   void initState() {
@@ -41,6 +49,13 @@ class _HomeScreenState extends State<HomeScreen> {
         listen: false,
       );
       final soilProvider = Provider.of<SoilProvider>(context, listen: false);
+      final myCropsProvider = Provider.of<MyCropsProvider>(
+        context,
+        listen: false,
+      );
+
+      // Initialize my crops from storage
+      await myCropsProvider.initialize();
 
       // Get location
       await locationProvider.requestLocation();
@@ -54,7 +69,13 @@ class _HomeScreenState extends State<HomeScreen> {
         // Fetch weather and soil data
         final lat = locationProvider.latitude!;
         final lon = locationProvider.longitude!;
-        final locationName = locationProvider.districtName ?? 'Location';
+        final locProvider = Provider.of<LocalizationProvider>(
+          context,
+          listen: false,
+        );
+        final locationName =
+            locationProvider.districtName ??
+            (locProvider.locale.languageCode == 'bn' ? 'অবস্থান' : 'Location');
 
         debugPrint('Fetching weather for: $lat, $lon (Name: $locationName)');
 
@@ -110,8 +131,11 @@ class _HomeScreenState extends State<HomeScreen> {
             'icon': Icons.water_drop,
             'color': Colors.blue,
             'title': 'High Rainfall Expected',
+            'titleBn': 'উচ্চ বৃষ্টিপাত প্রত্যাশিত',
             'message':
                 '${today.precipitationProbability}% chance of rain today. Delay spraying operations.',
+            'messageBn':
+                '${today.precipitationProbability}% আজ বৃষ্টির সম্ভাবনা। স্প্রে করা থেকে বিরত থাকুন।',
             'severity': 'warning',
           });
         }
@@ -122,8 +146,11 @@ class _HomeScreenState extends State<HomeScreen> {
             'icon': Icons.wb_sunny,
             'color': Colors.orange,
             'title': 'Heat Alert',
+            'titleBn': 'তাপ সতর্কতা',
             'message':
                 'High temperature (${today.maxTemp.toStringAsFixed(1)}°C). Ensure adequate irrigation.',
+            'messageBn':
+                'উচ্চ তাপমাত্রা (${today.maxTemp.toStringAsFixed(1)}°C)। পর্যাপ্ত সেচ নিশ্চিত করুন।',
             'severity': 'warning',
           });
         } else if (today.maxTemp > 25 && today.maxTemp < 30) {
@@ -131,8 +158,11 @@ class _HomeScreenState extends State<HomeScreen> {
             'icon': Icons.wb_sunny,
             'color': Colors.green,
             'title': 'Optimal Growing Conditions',
+            'titleBn': 'সর্বোত্তম বৃদ্ধির অবস্থা',
             'message':
                 'Temperature range ideal for most crops. Good time for field activities.',
+            'messageBn':
+                'বেশিরভাগ ফসলের জন্য আদর্শ তাপমাত্রা পরিসীমা। মাঠের কার্যক্রমের জন্য ভালো সময়।',
             'severity': 'tip',
           });
         }
@@ -143,8 +173,11 @@ class _HomeScreenState extends State<HomeScreen> {
             'icon': Icons.air,
             'color': Colors.orange,
             'title': 'High Wind Alert',
+            'titleBn': 'উচ্চ বাতাস সতর্কতা',
             'message':
                 'Wind speed ${today.windSpeed.toStringAsFixed(1)} km/h. Avoid pesticide spraying.',
+            'messageBn':
+                'বাতাসের গতি ${today.windSpeed.toStringAsFixed(1)} কিমি/ঘণ্টা। কীটনাশক স্প্রে করা এড়িয়ে চলুন।',
             'severity': 'warning',
           });
         }
@@ -157,8 +190,11 @@ class _HomeScreenState extends State<HomeScreen> {
             'icon': Icons.eco,
             'color': Colors.red,
             'title': 'Acidic Soil Detected',
+            'titleBn': 'অম্লীয় মাটি শনাক্ত হয়েছে',
             'message':
                 'pH ${soil.ph.toStringAsFixed(1)} - Consider lime application to raise pH.',
+            'messageBn':
+                'pH ${soil.ph.toStringAsFixed(1)} - pH বাড়াতে চুন প্রয়োগ বিবেচনা করুন।',
             'severity': 'warning',
           });
         } else if (soil.ph > 7.8) {
@@ -166,8 +202,11 @@ class _HomeScreenState extends State<HomeScreen> {
             'icon': Icons.eco,
             'color': Colors.amber,
             'title': 'Alkaline Soil',
+            'titleBn': 'ক্ষারীয় মাটি',
             'message':
                 'pH ${soil.ph.toStringAsFixed(1)} - Sulfur addition may help lower pH.',
+            'messageBn':
+                'pH ${soil.ph.toStringAsFixed(1)} - pH কমাতে সালফার সংযোজন সাহায্য করতে পারে।',
             'severity': 'warning',
           });
         } else {
@@ -175,8 +214,11 @@ class _HomeScreenState extends State<HomeScreen> {
             'icon': Icons.eco,
             'color': Colors.green,
             'title': 'Optimal Soil pH',
+            'titleBn': 'সর্বোত্তম মাটির pH',
             'message':
                 'pH ${soil.ph.toStringAsFixed(1)} - Ideal range for most crops.',
+            'messageBn':
+                'pH ${soil.ph.toStringAsFixed(1)} - বেশিরভাগ ফসলের জন্য আদর্শ পরিসীমা।',
             'severity': 'tip',
           });
         }
@@ -186,10 +228,99 @@ class _HomeScreenState extends State<HomeScreen> {
             'icon': Icons.compost,
             'color': Colors.brown,
             'title': 'Low Organic Matter',
+            'titleBn': 'কম জৈব পদার্থ',
             'message':
                 'Consider adding compost to improve soil fertility and water retention.',
+            'messageBn':
+                'মাটির উর্বরতা এবং জল ধারণ ক্ষমতা উন্নত করতে কম্পোস্ট যোগ করুন।',
             'severity': 'tip',
           });
+        }
+      }
+
+      // Crop-based insights from My Crops
+      final myCropsProvider = Provider.of<MyCropsProvider>(
+        context,
+        listen: false,
+      );
+
+      if (myCropsProvider.crops.isNotEmpty) {
+        // Check for crops ready for harvest
+        final readyForHarvest = myCropsProvider.cropsReadyForHarvest;
+        if (readyForHarvest.isNotEmpty) {
+          final cropName = readyForHarvest.first.cropName;
+          final cropNameBn = readyForHarvest.first.cropNameBn;
+          insights.insert(0, {
+            'icon': Icons.agriculture,
+            'color': Colors.green,
+            'title': '${_capitalizeFirstLetter(cropName)} Ready for Harvest',
+            'titleBn': '$cropNameBn কাটার জন্য প্রস্তুত',
+            'message':
+                'Your ${_capitalizeFirstLetter(cropName)} crop has reached maturity. Check the field for harvest readiness.',
+            'messageBn':
+                'আপনার $cropNameBn পরিপক্ব হয়েছে। কাটার জন্য মাঠ পরীক্ষা করুন।',
+            'severity': 'tip',
+          });
+        }
+
+        // Check for crops needing attention (0-7 days to harvest)
+        final needsAttention = myCropsProvider.cropsNeedingAttention;
+        for (final crop in needsAttention) {
+          final daysLeft = crop.daysUntilHarvest;
+          if (daysLeft > 0 && daysLeft <= 7) {
+            insights.add({
+              'icon': Icons.schedule,
+              'color': Colors.orange,
+              'title':
+                  '${_capitalizeFirstLetter(crop.cropName)} Approaching Harvest',
+              'titleBn': '${crop.cropNameBn} কাটা নিকটবর্তী',
+              'message':
+                  'Your ${_capitalizeFirstLetter(crop.cropName)} will be ready in $daysLeft days. Start preparing for harvest.',
+              'messageBn':
+                  'আপনার ${crop.cropNameBn} $daysLeft দিনের মধ্যে প্রস্তুত হবে। কাটার প্রস্তুতি শুরু করুন।',
+              'severity': 'warning',
+            });
+            break; // Only show one approaching harvest notification
+          }
+        }
+
+        // Add crop-specific weather warnings
+        if (weather != null && weather.dailyForecasts.isNotEmpty) {
+          final cropService = CropInfoService();
+          for (final crop in myCropsProvider.crops) {
+            final cropInfo = cropService.getCropInfo(crop.cropName);
+            if (cropInfo != null) {
+              final daysSincePlanting = DateTime.now()
+                  .difference(crop.plantedDate)
+                  .inDays;
+              final currentTemp =
+                  weather.currentTemp ?? weather.dailyForecasts.first.maxTemp;
+              final precipitation = weather
+                  .dailyForecasts
+                  .first
+                  .precipitationProbability
+                  .toDouble();
+
+              final warningMaps = cropService.getWeatherBasedWarnings(
+                crop.cropName,
+                daysSincePlanting,
+                currentTemp: currentTemp,
+                precipitation: precipitation,
+              );
+
+              for (final warning in warningMaps) {
+                insights.add({
+                  'icon': Icons.warning_amber,
+                  'color': Colors.red,
+                  'title': '${_capitalizeFirstLetter(crop.cropName)} Alert',
+                  'titleBn': '${crop.cropNameBn} সতর্কতা',
+                  'message': warning['message'],
+                  'messageBn': warning['messageBn'] ?? warning['message'],
+                  'severity': 'warning',
+                });
+              }
+            }
+          }
         }
       }
 
@@ -199,8 +330,11 @@ class _HomeScreenState extends State<HomeScreen> {
           'icon': Icons.tips_and_updates,
           'color': Colors.blue,
           'title': 'Welcome to AgriBase',
+          'titleBn': 'এগ্রিবেসে স্বাগতম',
           'message':
               'Enable location access to get personalized farming insights.',
+          'messageBn':
+              'ব্যক্তিগতকৃত কৃষি অন্তর্দৃষ্টি পেতে অবস্থান অ্যাক্সেস সক্ষম করুন।',
           'severity': 'info',
         });
       }
@@ -221,8 +355,11 @@ class _HomeScreenState extends State<HomeScreen> {
               'icon': Icons.error,
               'color': Colors.red,
               'title': 'Error Loading Data',
+              'titleBn': 'ডেটা লোড করতে ত্রুটি',
               'message':
                   'Failed to load insights. Please check your location and try again.',
+              'messageBn':
+                  'অন্তর্দৃষ্টি লোড করতে ব্যর্থ হয়েছে। আপনার অবস্থান পরীক্ষা করুন এবং পুনরায় চেষ্টা করুন।',
               'severity': 'warning',
             },
           ];
@@ -320,7 +457,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               body: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Hero Section with greeting
                     _buildHeroSection(
@@ -330,14 +467,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       authProvider,
                     ),
 
-                    // Daily Insight Widget (AI-powered tip)
-                    if (_insightsLoading)
-                      const Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Center(child: CircularProgressIndicator()),
-                      )
-                    else if (_dailyInsights.isNotEmpty)
-                      _buildDailyInsightCard(context, isBangla),
+                    // Daily Insight Widget (AI-powered tip) - Only for authenticated users
+                    if (isAuthenticated)
+                      if (_insightsLoading)
+                        const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Center(child: CircularProgressIndicator()),
+                        )
+                      else if (_dailyInsights.isNotEmpty)
+                        _buildDailyInsightCard(context, isBangla),
 
                     // System Status Badges
                     _buildStatusBadges(
@@ -361,6 +499,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     // Quick Actions Grid
                     _buildQuickActionsSection(context, isBangla),
 
+                    // My Crops Section (only for authenticated users)
+                    if (isAuthenticated)
+                      _buildMyCropsSection(context, isBangla),
+
                     // App Overview Section
                     _buildAppOverviewSection(context),
 
@@ -380,7 +522,6 @@ class _HomeScreenState extends State<HomeScreen> {
     Locale locale,
     AuthProvider authProvider,
   ) {
-    final theme = Theme.of(context);
     // make the container expanded, as it is being fixed width somehow
     return Container(
       width: double.infinity,
@@ -502,21 +643,28 @@ class _HomeScreenState extends State<HomeScreen> {
                           Icon(
                             Icons.auto_awesome,
                             size: 14,
-                            color: const Color(0xFF1A237E),
+                            color: isDark
+                                ? const Color.fromARGB(255, 65, 78, 219)
+                                : const Color(0xFF1A237E),
                           ),
                           const SizedBox(width: 4),
                           Text(
                             isBangla ? 'দৈনিক ইনসাইট' : 'Daily Insight',
                             style: TextStyle(
                               fontSize: 11,
-                              color: const Color(0xFF1A237E),
+                              color: isDark
+                                  ? const Color.fromARGB(255, 65, 78, 219)
+                                  : const Color(0xFF1A237E),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
                       ),
                       Text(
-                        insight['title'] as String,
+                        isBangla
+                            ? (insight['titleBn'] as String? ??
+                                  insight['title'] as String)
+                            : insight['title'] as String,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -537,7 +685,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              insight['message'] as String,
+              isBangla
+                  ? (insight['messageBn'] as String? ??
+                        insight['message'] as String)
+                  : insight['message'] as String,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                 height: 1.4,
@@ -587,9 +738,11 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 8),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: Row(
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              alignment: WrapAlignment.start,
               children: [
-                // Weather Status
                 if (weather != null && weather.dailyForecasts.isNotEmpty)
                   _buildStatusChip(
                     context,
@@ -598,8 +751,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     weather.dailyForecasts.first.getWeatherDescription(),
                     _getWeatherColor(weather.dailyForecasts.first.weatherCode),
                   ),
-                const SizedBox(width: 8),
-                // Soil Moisture (based on soil type)
                 if (soil != null)
                   _buildStatusChip(
                     context,
@@ -608,8 +759,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     soil.soilType,
                     Colors.green,
                   ),
-                const SizedBox(width: 8),
-                // Pest Risk (based on weather)
                 if (weather != null && weather.dailyForecasts.isNotEmpty)
                   _buildStatusChip(
                     context,
@@ -618,8 +767,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     _getPestRisk(weather.dailyForecasts.first, isBangla),
                     _getPestRiskColor(weather.dailyForecasts.first),
                   ),
-                const SizedBox(width: 8),
-                // Temperature
                 if (weather?.currentTemp != null && weather!.currentTemp! != 0)
                   _buildStatusChip(
                     context,
@@ -736,6 +883,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildQuickActionsSection(BuildContext context, bool isBangla) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -791,7 +939,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 context,
                 Icons.psychology,
                 isBangla ? 'AI হাব' : 'AI Hub',
-                const Color(0xFF1A237E),
+                isDark
+                    ? const Color.fromARGB(255, 65, 78, 219)
+                    : const Color(0xFF1A237E),
                 () {
                   // Navigate to AI Hub tab
                   // This will be handled by parent navigation
@@ -849,6 +999,254 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMyCropsSection(BuildContext context, bool isBangla) {
+    return Consumer<MyCropsProvider>(
+      builder: (context, myCropsProvider, child) {
+        final theme = Theme.of(context);
+        final isDark = theme.brightness == Brightness.dark;
+        final crops = myCropsProvider.crops;
+
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.grass,
+                        color: theme.colorScheme.primary,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        isBangla ? 'আমার ফসল' : 'My Crops',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const MyCropsScreen(),
+                        ),
+                      );
+                    },
+                    icon: Icon(
+                      crops.isEmpty ? Icons.add : Icons.arrow_forward,
+                      size: 18,
+                    ),
+                    label: Text(
+                      crops.isEmpty
+                          ? (isBangla ? 'ফসল যোগ করুন' : 'Add Crops')
+                          : (isBangla ? 'সব দেখুন' : 'View All'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              if (crops.isEmpty)
+                _buildEmptyCropsCard(context, isBangla)
+              else
+                SizedBox(
+                  height: 140,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: crops.length > 5 ? 5 : crops.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 12),
+                    itemBuilder: (context, index) {
+                      final crop = crops[index];
+                      return _buildCropPreviewCard(
+                        context,
+                        crop,
+                        isBangla,
+                        isDark,
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildEmptyCropsCard(BuildContext context, bool isBangla) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const MyCropsScreen()),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: isDark
+              ? theme.colorScheme.surfaceContainerHighest
+              : Colors.green.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Colors.green.withValues(alpha: 0.3),
+            style: BorderStyle.solid,
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              Icons.add_circle_outline,
+              size: 48,
+              color: theme.colorScheme.primary.withValues(alpha: 0.6),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              isBangla ? 'আপনার ফসল ট্র্যাক করুন' : 'Track Your Crops',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              isBangla
+                  ? 'ফসল যোগ করে ব্যক্তিগত ইনসাইট পান'
+                  : 'Add crops to get personalized insights',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCropPreviewCard(
+    BuildContext context,
+    dynamic crop,
+    bool isBangla,
+    bool isDark,
+  ) {
+    final theme = Theme.of(context);
+    final progress = crop.growthProgress;
+    final daysLeft = crop.daysUntilHarvest;
+
+    Color progressColor;
+    if (progress >= 1.0) {
+      progressColor = Colors.green;
+    } else if (progress >= 0.7) {
+      progressColor = Colors.orange;
+    } else {
+      progressColor = theme.colorScheme.primary;
+    }
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const MyCropsScreen()),
+        );
+      },
+      child: Container(
+        width: 140,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isDark
+              ? theme.colorScheme.surfaceContainerHighest
+              : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: progressColor.withValues(alpha: 0.3)),
+          boxShadow: [
+            BoxShadow(
+              color: progressColor.withValues(alpha: 0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Spacer(),
+                if (progress >= 1.0)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '✓',
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              isBangla
+                  ? crop.cropNameBn
+                  : _capitalizeFirstLetter(crop.cropName),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              progress >= 1.0
+                  ? (isBangla ? 'প্রস্তুত' : 'Ready')
+                  : (isBangla ? '$daysLeft দিন বাকি' : '$daysLeft days left'),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: progressColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: progress.clamp(0.0, 1.0),
+                backgroundColor: progressColor.withValues(alpha: 0.2),
+                valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+                minHeight: 4,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '${(progress * 100).toInt()}%',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+              ),
             ),
           ],
         ),
@@ -1129,7 +1527,10 @@ class _HomeScreenState extends State<HomeScreen> {
               await authProvider.signOut();
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text(Translations.translate(locale, 'signOut')),
+            child: Text(
+              Translations.translate(locale, 'signOut'),
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),

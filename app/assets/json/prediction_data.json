@@ -15247,7 +15247,7 @@
       "_source_table": "arhar"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 81.0,
       "Production_MT": 249.0,
@@ -15737,7 +15737,7 @@
       "_source_table": "arhar"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 112.8,
       "Production_MT": 259.5,
@@ -31487,7 +31487,7 @@
       "_source_table": "barley"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -31977,7 +31977,7 @@
       "_source_table": "barley"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -45669,7 +45669,7 @@
       "_source_table": "binnidana"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -46159,7 +46159,7 @@
       "_source_table": "binnidana"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -51003,7 +51003,7 @@
       "_source_table": "black_gram_mashkalai"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 2774.0,
       "Production_MT": 6274.0,
@@ -51493,7 +51493,7 @@
       "_source_table": "black_gram_mashkalai"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 2675.0,
       "Production_MT": 6084.89,
@@ -52417,7 +52417,7 @@
       "_source_table": "blake_cumin"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 0.0,
       "Production_MT": 10.0,
@@ -52907,7 +52907,7 @@
       "_source_table": "blake_cumin"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 4.0,
       "Production_MT": 33.73,
@@ -62224,7 +62224,7 @@
       "_source_table": "capsicum"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -62714,7 +62714,7 @@
       "_source_table": "capsicum"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 0.0,
       "Production_MT": 0.25,
@@ -69455,14 +69455,14 @@
       "_source_table": "cassialeaf"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 204.0,
       "Production_MT": 198.0,
       "_source_table": "cassialeaf"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2019-20",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -73788,7 +73788,7 @@
       "_source_table": "cheena_kaon"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 629.0,
       "Production_MT": 934.5,
@@ -74278,7 +74278,7 @@
       "_source_table": "cheena_kaon"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 339.3,
       "Production_MT": 1152.65,
@@ -77610,14 +77610,14 @@
       "_source_table": "coconut"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 1850.0,
       "Production_MT": 97.0,
       "_source_table": "coconut"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2019-20",
       "Hectares": 12294.0,
       "Production_MT": 12447.0,
@@ -84393,7 +84393,7 @@
       "_source_table": "coriander_leaf"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 0.0,
       "Production_MT": 869.0,
@@ -84883,7 +84883,7 @@
       "_source_table": "coriander_leaf"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 654.31,
       "Production_MT": 1116.45,
@@ -98239,14 +98239,14 @@
       "_source_table": "datepalm_juice"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 1077.0,
       "Production_MT": 0.0,
       "_source_table": "datepalm_juice"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2019-20",
       "Hectares": 361.0,
       "Production_MT": 1803.0,
@@ -102152,14 +102152,14 @@
       "_source_table": "dateplam_fruit"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 1305.0,
       "Production_MT": 0.0,
       "_source_table": "dateplam_fruit"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2019-20",
       "Hectares": 561.0,
       "Production_MT": 561.0,
@@ -109831,7 +109831,7 @@
       "_source_table": "fallon"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -110321,7 +110321,7 @@
       "_source_table": "fallon"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -111245,7 +111245,7 @@
       "_source_table": "gari_kalai"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 0.0,
       "Production_MT": 19.5,
@@ -111735,7 +111735,7 @@
       "_source_table": "gari_kalai"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 6.3,
       "Production_MT": 0.0,
@@ -113156,7 +113156,7 @@
       "_source_table": "garlic"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 36993.0,
       "Production_MT": 18766.0,
@@ -113646,7 +113646,7 @@
       "_source_table": "garlic"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 50802.0,
       "Production_MT": 19353.37,
@@ -114570,7 +114570,7 @@
       "_source_table": "ginger"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 22060.0,
       "Production_MT": 6665.0,
@@ -115060,7 +115060,7 @@
       "_source_table": "ginger"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 23801.0,
       "Production_MT": 7005.93,
@@ -117398,7 +117398,7 @@
       "_source_table": "gram_area"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 176.0,
       "Production_MT": 441.0,
@@ -117888,7 +117888,7 @@
       "_source_table": "gram_area"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 193.0,
       "Production_MT": 449.15,
@@ -124181,7 +124181,7 @@
       "_source_table": "green_gram_mug"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 345.0,
       "Production_MT": 895.0,
@@ -124671,7 +124671,7 @@
       "_source_table": "green_gram_mug"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 367.0,
       "Production_MT": 770.1,
@@ -127093,14 +127093,14 @@
       "_source_table": "green_palmyra_taler_sas"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 781.0,
       "Production_MT": 0.0,
       "_source_table": "green_palmyra_taler_sas"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2019-20",
       "Hectares": 838.0,
       "Production_MT": 838.0,
@@ -130285,7 +130285,7 @@
       "_source_table": "groundnut_kharif"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 3878.0,
       "Production_MT": 6038.15,
@@ -131209,7 +131209,7 @@
       "_source_table": "groundnut_rabi_kharif"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 20937.0,
       "Production_MT": 29689.0,
@@ -131699,7 +131699,7 @@
       "_source_table": "groundnut_rabi_kharif"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 21223.0,
       "Production_MT": 27987.65,
@@ -132623,7 +132623,7 @@
       "_source_table": "groundnut_summer"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 5947.0,
       "Production_MT": 5587.0,
@@ -133113,7 +133113,7 @@
       "_source_table": "groundnut_winter"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 14990.0,
       "Production_MT": 24102.0,
@@ -133603,7 +133603,7 @@
       "_source_table": "groundnut_winter"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 17345.0,
       "Production_MT": 21949.5,
@@ -146042,7 +146042,7 @@
       "_source_table": "joyeen"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -156976,7 +156976,7 @@
       "_source_table": "kharif_chili"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 4255.0,
       "Production_MT": 7747.0,
@@ -157466,7 +157466,7 @@
       "_source_table": "kharif_chili"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 5330.0,
       "Production_MT": 7362.79,
@@ -158817,7 +158817,7 @@
       "_source_table": "kharif_jower"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -159307,7 +159307,7 @@
       "_source_table": "kharif_jower"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -159797,7 +159797,7 @@
       "_source_table": "kharif_maize"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 287856.0,
       "Production_MT": 115482.0,
@@ -160287,7 +160287,7 @@
       "_source_table": "kharif_maize"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 321913.0,
       "Production_MT": 119357.25,
@@ -161211,7 +161211,7 @@
       "_source_table": "kheshari"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 1471.0,
       "Production_MT": 2169.0,
@@ -161701,7 +161701,7 @@
       "_source_table": "kheshari"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 1130.0,
       "Production_MT": 2176.75,
@@ -167357,7 +167357,7 @@
       "_source_table": "lentil_masur"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 1961.0,
       "Production_MT": 3753.0,
@@ -167847,7 +167847,7 @@
       "_source_table": "lentil_masur"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 1936.0,
       "Production_MT": 3701.3,
@@ -171648,7 +171648,7 @@
       "_source_table": "linseed"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 363.0,
       "Production_MT": 1264.0,
@@ -172138,7 +172138,7 @@
       "_source_table": "linseed"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 365.0,
       "Production_MT": 1530.44,
@@ -182981,7 +182981,7 @@
       "_source_table": "maize_area"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 287856.0,
       "Production_MT": 115482.0,
@@ -183471,7 +183471,7 @@
       "_source_table": "maize_area"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 1531483.0,
       "Production_MT": 510246.0,
@@ -183961,7 +183961,7 @@
       "_source_table": "maize_area"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 321913.0,
       "Production_MT": 119357.25,
@@ -184451,7 +184451,7 @@
       "_source_table": "maize_area"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 1870434.0,
       "Production_MT": 510391.0,
@@ -185809,7 +185809,7 @@
       "_source_table": "maize_rabi_kharif"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 1819339.0,
       "Production_MT": 625728.0,
@@ -186299,7 +186299,7 @@
       "_source_table": "maize_rabi_kharif"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 2192347.0,
       "Production_MT": 629748.3,
@@ -196806,7 +196806,7 @@
       "_source_table": "methi_fenugreek"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -197296,7 +197296,7 @@
       "_source_table": "methi_fenugreek"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -198717,7 +198717,7 @@
       "_source_table": "mint"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -199207,7 +199207,7 @@
       "_source_table": "mint"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -206375,7 +206375,7 @@
       "_source_table": "mustard"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 34070.0,
       "Production_MT": 72730.0,
@@ -206865,7 +206865,7 @@
       "_source_table": "mustard"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 37479.0,
       "Production_MT": 72686.0,
@@ -215020,7 +215020,7 @@
       "_source_table": "onion"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 64721.0,
       "Production_MT": 22049.0,
@@ -215510,7 +215510,7 @@
       "_source_table": "onion"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 68610.0,
       "Production_MT": 23568.41,
@@ -223882,14 +223882,14 @@
       "_source_table": "palmyra"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 68.0,
       "Production_MT": 0.0,
       "_source_table": "palmyra"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2019-20",
       "Hectares": 361.0,
       "Production_MT": 368.0,
@@ -224890,14 +224890,14 @@
       "_source_table": "palmyra"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 160.0,
       "Production_MT": 0.0,
       "_source_table": "palmyra"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2019-20",
       "Hectares": 1688.0,
       "Production_MT": 1688.0,
@@ -225898,14 +225898,14 @@
       "_source_table": "palmyra"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 781.0,
       "Production_MT": 0.0,
       "_source_table": "palmyra"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2019-20",
       "Hectares": 838.0,
       "Production_MT": 838.0,
@@ -236244,7 +236244,7 @@
       "_source_table": "pea_motor"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 43.0,
       "Production_MT": 143.0,
@@ -236734,7 +236734,7 @@
       "_source_table": "pea_motor"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 55.0,
       "Production_MT": 152.25,
@@ -247178,7 +247178,7 @@
       "_source_table": "pulses_gari_kalai"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 0.0,
       "Production_MT": 19.5,
@@ -247668,7 +247668,7 @@
       "_source_table": "pulses_gari_kalai"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 6.3,
       "Production_MT": 0.0,
@@ -249572,7 +249572,7 @@
       "_source_table": "rabi_chili"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 15449.0,
       "Production_MT": 24305.0,
@@ -250496,7 +250496,7 @@
       "_source_table": "rabi_jower"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -250986,7 +250986,7 @@
       "_source_table": "rabi_jower"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -251910,7 +251910,7 @@
       "_source_table": "rabi_maize"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 1531483.0,
       "Production_MT": 510246.0,
@@ -252400,7 +252400,7 @@
       "_source_table": "rabi_maize"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 1870434.0,
       "Production_MT": 510391.0,
@@ -260919,14 +260919,14 @@
       "_source_table": "ripe_palmyra_tal"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 160.0,
       "Production_MT": 0.0,
       "_source_table": "ripe_palmyra_tal"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2019-20",
       "Hectares": 1688.0,
       "Production_MT": 1688.0,
@@ -279336,7 +279336,7 @@
       "_source_table": "sesame_till_rabi_kharif"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 2833.0,
       "Production_MT": 5376.0,
@@ -279826,7 +279826,7 @@
       "_source_table": "sesame_till_rabi_kharif"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 2220.0,
       "Production_MT": 4523.85,
@@ -289892,7 +289892,7 @@
       "_source_table": "soyabean"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 3.0,
       "Production_MT": 1.0,
@@ -290375,7 +290375,7 @@
       "_source_table": "soyabean"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 1.0,
       "Production_MT": 4.0,
@@ -298551,7 +298551,7 @@
       "_source_table": "sugarcane"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 570105.0,
       "Production_MT": 25336.02,
@@ -299475,7 +299475,7 @@
       "_source_table": "sunflower"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 0.0,
       "Production_MT": 0.0,
@@ -299965,7 +299965,7 @@
       "_source_table": "sunflower"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 0.0,
       "Production_MT": 179.5,
@@ -314742,7 +314742,7 @@
       "_source_table": "turmeric"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2018-19",
       "Hectares": 6450.0,
       "Production_MT": 9601.0,
@@ -315232,7 +315232,7 @@
       "_source_table": "turmeric"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Year": "2020-21",
       "Hectares": 38392.0,
       "Production_MT": 9789.4,
@@ -325369,7 +325369,7 @@
       "_source_table": "arhar_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 143.18215688655158,
       "Production_MT_Pred": 269.9474996702688,
       "_source_table": "arhar_predictions"
@@ -331069,7 +331069,7 @@
       "_source_table": "black_gram_mashkalai_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 2579.364777127077,
       "Production_MT_Pred": 5896.736594694793,
       "_source_table": "black_gram_mashkalai_predictions"
@@ -331279,7 +331279,7 @@
       "_source_table": "blake_cumin_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 7.852734437709676,
       "Production_MT_Pred": 56.564152695566186,
       "_source_table": "blake_cumin_predictions"
@@ -333691,7 +333691,7 @@
       "_source_table": "capsicum_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 0.0,
       "Production_MT_Pred": 0.4979664340001634,
       "_source_table": "capsicum_predictions"
@@ -334873,7 +334873,7 @@
       "_source_table": "cassialeaf_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 0.0,
       "Production_MT_Pred": 0.0,
       "_source_table": "cassialeaf_predictions"
@@ -335497,7 +335497,7 @@
       "_source_table": "cheena_kaon_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 58.20881003282767,
       "Production_MT_Pred": 1362.8719806570004,
       "_source_table": "cheena_kaon_predictions"
@@ -336037,7 +336037,7 @@
       "_source_table": "coconut_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 17047.664777680013,
       "Production_MT_Pred": 18067.8447065425,
       "_source_table": "coconut_predictions"
@@ -336883,7 +336883,7 @@
       "_source_table": "coriander_leaf_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 1305.308234630596,
       "Production_MT_Pred": 1359.016232452831,
       "_source_table": "coriander_leaf_predictions"
@@ -338989,7 +338989,7 @@
       "_source_table": "datepalm_juice_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 0.0,
       "Production_MT_Pred": 3596.871886550374,
       "_source_table": "datepalm_juice_predictions"
@@ -339475,7 +339475,7 @@
       "_source_table": "dateplam_fruit_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 0.0,
       "Production_MT_Pred": 1119.1542515973747,
       "_source_table": "dateplam_fruit_predictions"
@@ -340231,7 +340231,7 @@
       "_source_table": "gari_kalai_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 12.373829380607756,
       "Production_MT_Pred": 0.0,
       "_source_table": "gari_kalai_predictions"
@@ -340639,7 +340639,7 @@
       "_source_table": "garlic_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 57088.93587479349,
       "Production_MT_Pred": 19937.76050135759,
       "_source_table": "garlic_predictions"
@@ -340999,7 +340999,7 @@
       "_source_table": "ginger_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 25533.18611633494,
       "Production_MT_Pred": 7345.15535048668,
       "_source_table": "ginger_predictions"
@@ -341431,7 +341431,7 @@
       "_source_table": "gram_area_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 209.91499597915617,
       "Production_MT_Pred": 457.0544621259113,
       "_source_table": "gram_area_predictions"
@@ -342727,7 +342727,7 @@
       "_source_table": "green_gram_mug_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 388.5593418613137,
       "Production_MT_Pred": 645.8245000604982,
       "_source_table": "green_gram_mug_predictions"
@@ -343219,7 +343219,7 @@
       "_source_table": "green_palmyra_taler_sas_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 892.3148431937377,
       "Production_MT_Pred": 1671.756598437771,
       "_source_table": "green_palmyra_taler_sas_predictions"
@@ -344269,7 +344269,7 @@
       "_source_table": "groundnut_rabi_kharif_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 21507.55282629338,
       "Production_MT_Pred": 26294.947919243103,
       "_source_table": "groundnut_rabi_kharif_predictions"
@@ -344671,7 +344671,7 @@
       "_source_table": "groundnut_winter_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 19688.049964821606,
       "Production_MT_Pred": 19807.76262960303,
       "_source_table": "groundnut_winter_predictions"
@@ -348979,7 +348979,7 @@
       "_source_table": "kharif_chili_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 6399.624994662174,
       "Production_MT_Pred": 6985.879166206392,
       "_source_table": "kharif_chili_predictions"
@@ -349315,7 +349315,7 @@
       "_source_table": "kharif_maize_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 337415.44592890976,
       "Production_MT_Pred": 121121.59165994216,
       "_source_table": "kharif_maize_predictions"
@@ -349681,7 +349681,7 @@
       "_source_table": "kheshari_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 790.7050440023049,
       "Production_MT_Pred": 2184.291151012036,
       "_source_table": "kheshari_predictions"
@@ -351343,7 +351343,7 @@
       "_source_table": "lentil_masur_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 1911.125000902617,
       "Production_MT_Pred": 3651.623941105051,
       "_source_table": "lentil_masur_predictions"
@@ -352063,7 +352063,7 @@
       "_source_table": "linseed_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 366.9899940808984,
       "Production_MT_Pred": 1787.2790947520998,
       "_source_table": "linseed_predictions"
@@ -353989,7 +353989,7 @@
       "_source_table": "maize_area_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 1918051.504917701,
       "Production_MT_Pred": 482231.037522945,
       "_source_table": "maize_area_predictions"
@@ -354397,7 +354397,7 @@
       "_source_table": "maize_rabi_kharif_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 2521264.3781954325,
       "Production_MT_Pred": 631578.6110729884,
       "_source_table": "maize_rabi_kharif_predictions"
@@ -357193,7 +357193,7 @@
       "_source_table": "mustard_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 40870.731916742974,
       "Production_MT_Pred": 72642.21999966264,
       "_source_table": "mustard_predictions"
@@ -358759,7 +358759,7 @@
       "_source_table": "onion_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 70380.33885887885,
       "Production_MT_Pred": 25080.222953559463,
       "_source_table": "onion_predictions"
@@ -359521,7 +359521,7 @@
       "_source_table": "palmyra_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 1272.9885332193844,
       "Production_MT_Pred": 1437.7715692655747,
       "_source_table": "palmyra_predictions"
@@ -361069,7 +361069,7 @@
       "_source_table": "pea_motor_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 66.56418146055819,
       "Production_MT_Pred": 161.45374994693543,
       "_source_table": "pea_motor_predictions"
@@ -363235,7 +363235,7 @@
       "_source_table": "pulses_gari_kalai_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 12.373829380607756,
       "Production_MT_Pred": 0.0,
       "_source_table": "pulses_gari_kalai_predictions"
@@ -364075,7 +364075,7 @@
       "_source_table": "rabi_maize_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 2024059.1694050136,
       "Production_MT_Pred": 510530.59452168486,
       "_source_table": "rabi_maize_predictions"
@@ -366265,7 +366265,7 @@
       "_source_table": "ripe_palmyra_tal_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 3208.360003741237,
       "Production_MT_Pred": 3367.314828952203,
       "_source_table": "ripe_palmyra_tal_predictions"
@@ -368515,7 +368515,7 @@
       "_source_table": "sesame_till_rabi_kharif_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 1610.112246369339,
       "Production_MT_Pred": 3746.577581346707,
       "_source_table": "sesame_till_rabi_kharif_predictions"
@@ -370111,7 +370111,7 @@
       "_source_table": "soyabean_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 0.0,
       "Production_MT_Pred": 6.960162827599044,
       "_source_table": "soyabean_predictions"
@@ -371965,7 +371965,7 @@
       "_source_table": "sunflower_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 0.0,
       "Production_MT_Pred": 358.08994842236774,
       "_source_table": "sunflower_predictions"
@@ -373951,7 +373951,7 @@
       "_source_table": "turmeric_predictions"
     },
     {
-      "District": "Rangpur Division",
+      "District": "Rangpur",
       "Area_Hectares_Pred": 52932.30951712956,
       "Production_MT_Pred": 9976.84575915573,
       "_source_table": "turmeric_predictions"

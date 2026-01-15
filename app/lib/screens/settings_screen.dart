@@ -31,138 +31,270 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: Text(Translations.translate(locale, 'settings')),
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,
+        elevation: 0,
       ),
-      body: ListView(
-        children: [
-          // Theme Switching
-          SwitchListTile(
-            title: Text(Translations.translate(locale, 'darkMode')),
-            value: themeProvider.themeMode == ThemeMode.dark,
-            onChanged: (value) {
-              themeProvider.toggleTheme();
-            },
-          ),
-          Divider(color: theme.dividerColor),
-          // Localization
-          ListTile(
-            title: Text(Translations.translate(locale, 'language')),
-            trailing: DropdownButton<String>(
-              value: locale.languageCode == 'bn' ? 'bangla' : 'english',
-              items: [
-                DropdownMenuItem(
-                  value: 'english',
-                  child: Text(Translations.translate(locale, 'english')),
-                ),
-                DropdownMenuItem(
-                  value: 'bangla',
-                  child: Text(Translations.translate(locale, 'bangla')),
-                ),
-              ],
-              onChanged: (value) {
-                if (value != null) {
-                  localizationProvider.setLanguage(
-                    value == 'bangla' ? 'Bangla' : 'English',
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildCard(theme, Translations.translate(locale, 'appearance'), [
+              _buildSwitchRow(
+                theme,
+                icon: Icons.brightness_6,
+                label: Translations.translate(locale, 'darkMode'),
+                value: themeProvider.themeMode == ThemeMode.dark,
+                onChanged: (_) => themeProvider.toggleTheme(),
+              ),
+              const SizedBox(height: 12),
+              _buildLanguageRow(theme, locale, localizationProvider),
+            ]),
+            const SizedBox(height: 16),
+            _buildCard(theme, Translations.translate(locale, 'fontSize'), [
+              Consumer<FontSizeProvider>(
+                builder: (context, fontSizeProvider, _) {
+                  return Row(
+                    spacing: 12,
+                    // runSpacing: 8,
+                    children: [
+                      _buildChipButton(
+                        theme,
+                        label: Translations.translate(locale, 'small'),
+                        selected: fontSizeProvider.fontSize == 12.0,
+                        onTap: () => fontSizeProvider.setFontSize(12.0),
+                      ),
+                      _buildChipButton(
+                        theme,
+                        label: Translations.translate(locale, 'default'),
+                        selected: fontSizeProvider.fontSize == 14.0,
+                        onTap: () => fontSizeProvider.setFontSize(14.0),
+                      ),
+                      _buildChipButton(
+                        theme,
+                        label: Translations.translate(locale, 'large'),
+                        selected: fontSizeProvider.fontSize == 16.0,
+                        onTap: () => fontSizeProvider.setFontSize(16.0),
+                      ),
+                    ],
                   );
-                }
-              },
-            ),
-          ),
-          Divider(color: theme.dividerColor),
-          // Font Size
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              Translations.translate(locale, 'fontSize'),
+                },
+              ),
+            ]),
+            const SizedBox(height: 16),
+            _buildCard(theme, Translations.translate(locale, 'general'), [
+              _buildActionRow(
+                theme,
+                icon: Icons.privacy_tip,
+                label: Translations.translate(locale, 'privacyPolicy'),
+                onTap: () {},
+              ),
+              const SizedBox(height: 12),
+              _buildActionRow(
+                theme,
+                icon: Icons.info_outline,
+                label: Translations.translate(locale, 'aboutUs'),
+                onTap: () {},
+              ),
+            ]),
+            const SizedBox(height: 16),
+            _buildCard(theme, Translations.translate(locale, 'account'), [
+              if (!isAuthenticated)
+                _buildActionRow(
+                  theme,
+                  icon: Icons.login,
+                  label: Translations.translate(locale, 'login'),
+                  color: theme.colorScheme.primary,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LoginScreen(
+                          onGuestMode: () => Navigator.of(context).pop(),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              if (isAuthenticated)
+                _buildActionRow(
+                  theme,
+                  icon: Icons.logout,
+                  label: Translations.translate(locale, 'logOut'),
+                  color: theme.colorScheme.error,
+                  onTap: () async {
+                    await authProvider.signOut();
+                    if (context.mounted) {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                    }
+                  },
+                ),
+            ]),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCard(ThemeData theme, String title, List<Widget> children) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w700,
                 color: theme.colorScheme.onSurface,
               ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Consumer<FontSizeProvider>(
-            builder: (context, fontSizeProvider, child) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        fontSizeProvider.setFontSize(12.0);
-                      },
-                      child: Text(Translations.translate(locale, 'small')),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        fontSizeProvider.setFontSize(14.0);
-                      },
-                      child: Text(Translations.translate(locale, 'default')),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        fontSizeProvider.setFontSize(16.0);
-                      },
-                      child: Text(Translations.translate(locale, 'large')),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-          Divider(color: theme.dividerColor),
-          // Other Options
-          ListTile(
-            title: Text(Translations.translate(locale, 'privacyPolicy')),
-            onTap: () {
-              // Navigate to Privacy Policy
-            },
-          ),
-          ListTile(
-            title: Text(Translations.translate(locale, 'aboutUs')),
-            onTap: () {
-              // Navigate to About Us
-            },
-          ),
-          // Show Login button if user is in guest mode (not authenticated)
-          if (!isAuthenticated) ...[
-            Divider(color: theme.dividerColor),
-            ListTile(
-              title: Text(Translations.translate(locale, 'login')),
-              leading: Icon(Icons.login, color: theme.colorScheme.primary),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginScreen(
-                      onGuestMode: () {
-                        // If user chooses guest mode from login screen, just go back
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ),
-                );
-              },
-            ),
+            const SizedBox(height: 12),
+            ...children,
           ],
-          // Show Log Out button only if user is authenticated
-          if (isAuthenticated) ...[
-            Divider(color: theme.dividerColor),
-            ListTile(
-              title: Text(Translations.translate(locale, 'logOut')),
-              leading: Icon(Icons.logout, color: theme.colorScheme.error),
-              onTap: () async {
-                await authProvider.signOut();
-                // Navigate back to root so AuthWrapper can show login screen
-                if (context.mounted) {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                }
-              },
-            ),
-          ],
-        ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildSwitchRow(
+    ThemeData theme, {
+    required IconData icon,
+    required String label,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return Row(
+      children: [
+        _buildIconBadge(theme, icon),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+        ),
+        Switch(value: value, onChanged: onChanged),
+      ],
+    );
+  }
+
+  Widget _buildLanguageRow(
+    ThemeData theme,
+    Locale locale,
+    LocalizationProvider localizationProvider,
+  ) {
+    return Row(
+      children: [
+        _buildIconBadge(theme, Icons.language),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            Translations.translate(locale, 'language'),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+        ),
+        DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            value: locale.languageCode == 'bn' ? 'bangla' : 'english',
+            items: [
+              DropdownMenuItem(
+                value: 'english',
+                child: Text(Translations.translate(locale, 'english')),
+              ),
+              DropdownMenuItem(
+                value: 'bangla',
+                child: Text(Translations.translate(locale, 'bangla')),
+              ),
+            ],
+            onChanged: (value) {
+              if (value != null) {
+                localizationProvider.setLanguage(
+                  value == 'bangla' ? 'Bangla' : 'English',
+                );
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildChipButton(
+    ThemeData theme, {
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return ChoiceChip(
+      label: Text(label),
+      selected: selected,
+      onSelected: (_) => onTap(),
+      selectedColor: theme.colorScheme.primary.withValues(alpha: 0.15),
+      backgroundColor: theme.colorScheme.surface,
+      labelStyle: TextStyle(
+        color: selected
+            ? theme.colorScheme.primary
+            : theme.colorScheme.onSurface,
+        fontWeight: FontWeight.w600,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    );
+  }
+
+  Widget _buildActionRow(
+    ThemeData theme, {
+    required IconData icon,
+    required String label,
+    Color? color,
+    required VoidCallback onTap,
+  }) {
+    final resolvedColor = color ?? theme.colorScheme.onSurface;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            _buildIconBadge(theme, icon, color: resolvedColor),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+            ),
+            Icon(Icons.chevron_right, color: theme.hintColor),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIconBadge(ThemeData theme, IconData icon, {Color? color}) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: (color ?? theme.colorScheme.primary).withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(icon, size: 18, color: color ?? theme.colorScheme.primary),
     );
   }
 }

@@ -311,10 +311,11 @@ class JsonDataService {
         }
       }
 
-      // Sort by production descending
+      // Sort by yield descending
       results.sort(
-        (a, b) =>
-            (b['production_mt'] as num).compareTo(a['production_mt'] as num),
+        (a, b) => (b['yield_per_hectare'] as num).compareTo(
+          a['yield_per_hectare'] as num,
+        ),
       );
 
       return limit > 0 ? results.take(limit).toList() : results;

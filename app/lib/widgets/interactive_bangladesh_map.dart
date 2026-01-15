@@ -143,14 +143,16 @@ class _InteractiveBangladeshMapState extends State<InteractiveBangladeshMap> {
             child: Container(
               height: 400,
               color: Colors.green[50],
-              child: const Center(
+              child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CircularProgressIndicator(),
                     SizedBox(height: 16),
                     Text(
-                      'Loading district data...',
+                      locale.languageCode == 'bn'
+                          ? 'জেলার তথ্য লোড হচ্ছে...'
+                          : 'Loading district data...',
                       style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   ],
@@ -199,60 +201,8 @@ class _InteractiveBangladeshMapState extends State<InteractiveBangladeshMap> {
                               });
                             },
 
-                            // --- TOOLTIP ---
+                            // --- TOOLTIP REMOVED - info shown in panel below ---
                             showDataLabels: false,
-                            shapeTooltipBuilder: (BuildContext context, int index) {
-                              final data = _dataList[index];
-                              return IntrinsicWidth(
-                                child: Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withValues(alpha: 0.9),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        data.name,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const Divider(
-                                        color: Colors.white24,
-                                        height: 12,
-                                      ),
-                                      Text(
-                                        'Production: ${TranslationHelper.formatNumberWithCommas((data.production / 1000), decimalPlaces: 3, locale: locale)}k MT',
-                                        style: const TextStyle(
-                                          color: Colors.white70,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Yield: ${TranslationHelper.formatNumberWithCommas(data.yieldValue, decimalPlaces: 3, locale: locale)} MT/Ha',
-                                        style: const TextStyle(
-                                          color: Colors.white70,
-                                        ),
-                                      ),
-                                      if (data.percentage != null) ...[
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          'Contribution: ${TranslationHelper.formatNumberWithCommas(data.percentage!, decimalPlaces: 3, locale: locale)}%',
-                                          style: const TextStyle(
-                                            color: Colors.white70,
-                                          ),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
                           ),
                         ],
                       ),
@@ -268,7 +218,10 @@ class _InteractiveBangladeshMapState extends State<InteractiveBangladeshMap> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _dataList[_selectedIndex].name,
+                        TranslationHelper.formatDistrictName(
+                          _dataList[_selectedIndex].name,
+                          locale,
+                        ),
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -280,12 +233,14 @@ class _InteractiveBangladeshMapState extends State<InteractiveBangladeshMap> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           _buildInfoItem(
-                            "Production:",
+                            locale.languageCode == 'bn'
+                                ? "উৎপাদন:"
+                                : "Production:",
                             "${TranslationHelper.formatNumberWithCommas((_dataList[_selectedIndex].production / 1000), decimalPlaces: 3, locale: locale)}k MT",
                           ),
                           SizedBox(width: 16),
                           _buildInfoItem(
-                            "Yield:",
+                            locale.languageCode == 'bn' ? "ফলন:" : "Yield:",
                             "${TranslationHelper.formatNumberWithCommas(_dataList[_selectedIndex].yieldValue, decimalPlaces: 3, locale: locale)} T/Ha",
                           ),
                         ],

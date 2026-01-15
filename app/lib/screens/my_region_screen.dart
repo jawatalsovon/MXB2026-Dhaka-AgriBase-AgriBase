@@ -310,12 +310,10 @@ class _MyRegionScreenState extends State<MyRegionScreen> {
             )
           else ...[
             Text(
-              'Top ${_topCount == -1 ? 'All' : _topCount.toString()} Most Yielding Crops in $_selectedDistrict ($_selectedYear)',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
+              locale.languageCode == 'bn'
+                  ? '${TranslationHelper.formatDistrictName(_selectedDisplayDistrict ?? '', locale)}-এ শীর্ষ ${_topCount == -1 ? 'সব' : TranslationHelper.formatNumber(_topCount.toString(), useBengaliNumerals: true)} সর্বাধিক ফলনশীল ফসল (${TranslationHelper.formatNumber(_selectedYear ?? '', useBengaliNumerals: true)})'
+                  : 'Top ${_topCount == -1 ? 'All' : _topCount.toString()} Most Yielding Crops in ${_selectedDisplayDistrict ?? ''} ($_selectedYear)',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Card(

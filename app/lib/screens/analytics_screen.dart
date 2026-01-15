@@ -132,6 +132,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final body = Consumer<LocalizationProvider>(
       builder: (context, localizationProvider, child) {
         final locale = localizationProvider.locale;
@@ -432,7 +433,6 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 12),

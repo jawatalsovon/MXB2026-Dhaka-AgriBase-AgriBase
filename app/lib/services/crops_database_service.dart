@@ -285,7 +285,7 @@ class CropsDatabaseService {
           END as yield_per_hectare
         FROM crop_data
         WHERE district = ? AND year = ? AND production_mt IS NOT NULL
-        ORDER BY production_mt DESC
+        ORDER BY yield_per_hectare DESC
         ${limit > 0 ? 'LIMIT ?' : ''}
       '''
               .trim();
