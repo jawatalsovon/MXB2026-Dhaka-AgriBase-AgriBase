@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:provider/provider.dart';
-import '../widgets/sections/historical_data_section.dart' as hist;
 import '../widgets/sections/prediction_section.dart' as pred;
 import '../providers/localization_provider.dart';
 import '../utils/translations.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  final int initialTab;
+  const DashboardScreen({super.key, this.initialTab = 0});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -20,7 +20,11 @@ class _DashboardScreenState extends State<DashboardScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.initialTab,
+    );
   }
 
   @override
@@ -34,52 +38,51 @@ class _DashboardScreenState extends State<DashboardScreen>
     final theme = Theme.of(context);
     final localizationProvider = Provider.of<LocalizationProvider>(context);
     final locale = localizationProvider.locale;
-    
+
+// remove the tabs. keep only the prediction. so the app bar will say Prediction. remove the historical data part
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: theme.colorScheme.primary,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          Translations.translate(locale, 'dashboard'),
-          style: TextStyle(
-            color: theme.colorScheme.onPrimary,
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
+            backgroundColor: theme.colorScheme.primary,
+            elevation: 0,
+            title: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.trending_up, color: theme.colorScheme.onPrimary),
+                const SizedBox(width: 8),
+                Text(
+                  // isBangla ? 'টুলস' : 'Tools',
+                  Translations.translate(locale, 'prediction'),
+                  style: TextStyle(
+                    color: theme.colorScheme.onPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            centerTitle: true,
           ),
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: theme.colorScheme.onPrimary,
-          labelColor: theme.colorScheme.onPrimary,
-          unselectedLabelColor: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
-          tabs: [
-            Tab(text: Translations.translate(locale, 'historicalData')),
-            Tab(text: Translations.translate(locale, 'prediction')),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildSectionWithGlassmorphism(context, const hist.HistoricalDataSection()),
-          _buildSectionWithGlassmorphism(context, const pred.PredictionSection()),
-        ],
-      ),
+      body: 
+          _buildSectionWithGlassmorphism(
+            context,
+            const pred.PredictionSection(),
+          ),
+      
     );
   }
 
   Widget _buildSectionWithGlassmorphism(BuildContext context, Widget child) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     return SingleChildScrollView(
       child: Container(
         padding: const EdgeInsets.all(16),
         child: Container(
           decoration: BoxDecoration(
             color: isDark
-                ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3)
+                ? theme.colorScheme.surfaceContainerHighest.withValues(
+                    alpha: 0.3,
+                  )
                 : Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(

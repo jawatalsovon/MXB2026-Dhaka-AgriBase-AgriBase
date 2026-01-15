@@ -7,7 +7,8 @@ import '../services/rag_service.dart';
 import '../utils/translations.dart';
 
 class AssistantScreen extends StatefulWidget {
-  const AssistantScreen({super.key});
+  final String? initialQuery;
+  const AssistantScreen({super.key, this.initialQuery});
 
   @override
   State<AssistantScreen> createState() => _AssistantScreenState();
@@ -23,6 +24,18 @@ class _AssistantScreenState extends State<AssistantScreen> {
   void initState() {
     super.initState();
     _initializeRAG();
+    // Pre-fill the text field if initialQuery is provided
+    if (widget.initialQuery != null && widget.initialQuery!.isNotEmpty) {
+      _controller.text = widget.initialQuery!;
+      // Optionally auto-send after a brief delay
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted && _controller.text.isNotEmpty) {
+            _send();
+          }
+        });
+      });
+    }
   }
 
   void _initializeRAG() {
@@ -135,17 +148,49 @@ class _AssistantScreenState extends State<AssistantScreen> {
   }
 
   Widget _buildQuestionButton(String question) {
-    return OutlinedButton.icon(
-      onPressed: () => _pasteQuestion(question),
-      icon: const Icon(Icons.help_outline, size: 16),
-      label: Text(
-        question,
-        style: const TextStyle(fontSize: 12),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      style: OutlinedButton.styleFrom(
-        side: BorderSide(color: Theme.of(context).primaryColor),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _pasteQuestion(question),
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                const Color(0xFF1A237E).withValues(alpha: 0.1),
+                const Color(0xFF4A148C).withValues(alpha: 0.1),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: const Color(0xFF1A237E).withValues(alpha: 0.3),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.auto_awesome,
+                size: 14,
+                color: Color(0xFF1A237E),
+              ),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  question,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF1A237E),
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -154,126 +199,466 @@ class _AssistantScreenState extends State<AssistantScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final locale = Provider.of<LocalizationProvider>(context).locale;
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(Translations.translate(locale, 'agribaseAiAssistant')),
-        backgroundColor: Theme.of(context).primaryColor,
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.psychology, size: 20),
+            const SizedBox(width: 8),
+            Text(Translations.translate(locale, 'agribaseAiAssistant')),
+          ],
+        ),
+        centerTitle: true,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF1A237E), Color(0xFF311B92), Color(0xFF4A148C)],
+            ),
+          ),
+        ),
+        elevation: 0,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  Translations.translate(locale, 'askQuestionsLike'),
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    _buildQuestionButton(
-                      Translations.translate(locale, 'cropDidBest'),
-                    ),
-                    _buildQuestionButton(
-                      Translations.translate(locale, 'irrigateAmanRice'),
-                    ),
-                    _buildQuestionButton(
-                      Translations.translate(locale, 'yieldStatisticsBoro'),
-                    ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              const Color(0xFF1A237E).withValues(alpha: 0.05),
+              Colors.transparent,
+            ],
+            stops: const [0.0, 0.3],
+          ),
+        ),
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFF1A237E).withValues(alpha: 0.1),
+                    const Color(0xFF4A148C).withValues(alpha: 0.05),
                   ],
                 ),
-              ],
-            ),
-          ),
-          const Divider(height: 1),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final msg = _messages[index];
-                final isUser = msg.isUser;
-                final alignment = isUser
-                    ? Alignment.centerRight
-                    : Alignment.centerLeft;
-                final bubbleColor = isUser
-                    ? const Color.fromARGB(255, 0, 77, 64)
-                    : theme.cardColor;
-                final textColor = isUser
-                    ? Colors.white
-                    : theme.textTheme.bodyMedium?.color;
-
-                return Align(
-                  alignment: alignment,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: bubbleColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: isUser
-                          ? CrossAxisAlignment.end
-                          : CrossAxisAlignment.start,
-                      children: [
-                        Text(msg.text, style: TextStyle(color: textColor)),
-                        if (msg.sqlUsed != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Text(
-                              'SQL used:\n${msg.sqlUsed}',
-                              style: TextStyle(
-                                color: textColor?.withValues(alpha: 0.7),
-                                fontSize: 11,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          if (_isLoading)
-            const Padding(
-              padding: EdgeInsets.all(8),
-              child: CircularProgressIndicator(),
-            ),
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: const Color(0xFF1A237E).withValues(alpha: 0.2),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      textInputAction: TextInputAction.send,
-                      onSubmitted: (_) => _send(),
-                      decoration: InputDecoration(
-                        hintText: Translations.translate(locale, 'askAiPrompt'),
-                        border: const OutlineInputBorder(),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1A237E).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.lightbulb_outline,
+                          size: 16,
+                          color: Color(0xFF1A237E),
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 8),
+                      Text(
+                        Translations.translate(locale, 'askQuestionsLike'),
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF1A237E),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    icon: const Icon(Icons.send),
-                    color: Theme.of(context).primaryColor,
-                    onPressed: _isLoading ? null : _send,
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _buildQuestionButton(
+                        Translations.translate(locale, 'cropDidBest'),
+                      ),
+                      _buildQuestionButton(
+                        Translations.translate(locale, 'irrigateAmanRice'),
+                      ),
+                      _buildQuestionButton(
+                        Translations.translate(locale, 'yieldStatisticsBoro'),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+            Expanded(
+              child: _messages.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF1A237E), Color(0xFF4A148C)],
+                              ),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(
+                                    0xFF1A237E,
+                                  ).withValues(alpha: 0.3),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.psychology,
+                              size: 48,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          Text(
+                            'Ask me anything!',
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF1A237E),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'I can help with crop data, farming tips,\nand agricultural insights',
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(12),
+                      itemCount: _messages.length,
+                      itemBuilder: (context, index) {
+                        final msg = _messages[index];
+                        final isUser = msg.isUser;
+                        final alignment = isUser
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft;
+
+                        return Align(
+                          alignment: alignment,
+                          child: Container(
+                            constraints: BoxConstraints(
+                              maxWidth:
+                                  MediaQuery.of(context).size.width * 0.75,
+                            ),
+                            margin: const EdgeInsets.symmetric(
+                              vertical: 6,
+                              horizontal: 4,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: isUser
+                                  ? CrossAxisAlignment.end
+                                  : CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    gradient: isUser
+                                        ? const LinearGradient(
+                                            colors: [
+                                              Color(0xFF1A237E),
+                                              Color(0xFF311B92),
+                                            ],
+                                          )
+                                        : null,
+                                    color: isUser
+                                        ? null
+                                        : isDark
+                                        ? theme
+                                              .colorScheme
+                                              .surfaceContainerHighest
+                                        : Colors.grey[100],
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: const Radius.circular(20),
+                                      topRight: const Radius.circular(20),
+                                      bottomLeft: Radius.circular(
+                                        isUser ? 20 : 4,
+                                      ),
+                                      bottomRight: Radius.circular(
+                                        isUser ? 4 : 20,
+                                      ),
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: isUser
+                                            ? const Color(
+                                                0xFF1A237E,
+                                              ).withValues(alpha: 0.3)
+                                            : Colors.black.withValues(
+                                                alpha: 0.05,
+                                              ),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: isUser
+                                        ? CrossAxisAlignment.end
+                                        : CrossAxisAlignment.start,
+                                    children: [
+                                      if (!isUser && msg.hasRAGContext)
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            bottom: 8,
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.auto_awesome,
+                                                size: 12,
+                                                color: const Color(0xFF1A237E),
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                'RAG Enhanced',
+                                                style: TextStyle(
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: const Color(
+                                                    0xFF1A237E,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      Text(
+                                        msg.text,
+                                        style: TextStyle(
+                                          color: isUser
+                                              ? Colors.white
+                                              : theme
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.color,
+                                          fontSize: 14,
+                                          height: 1.4,
+                                        ),
+                                      ),
+                                      if (msg.sqlUsed != null)
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                            top: 12,
+                                          ),
+                                          padding: const EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            color: Colors.black.withValues(
+                                              alpha: isUser ? 0.2 : 0.05,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            border: Border.all(
+                                              color:
+                                                  (isUser
+                                                          ? Colors.white
+                                                          : Colors.grey)
+                                                      .withValues(alpha: 0.2),
+                                            ),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    Icons.code,
+                                                    size: 12,
+                                                    color: isUser
+                                                        ? Colors.white
+                                                              .withValues(
+                                                                alpha: 0.7,
+                                                              )
+                                                        : Colors.grey[600],
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    'SQL Query',
+                                                    style: TextStyle(
+                                                      fontSize: 10,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: isUser
+                                                          ? Colors.white
+                                                                .withValues(
+                                                                  alpha: 0.7,
+                                                                )
+                                                          : Colors.grey[600],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 6),
+                                              Text(
+                                                msg.sqlUsed!,
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontFamily: 'monospace',
+                                                  color: isUser
+                                                      ? Colors.white.withValues(
+                                                          alpha: 0.9,
+                                                        )
+                                                      : Colors.grey[700],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+            if (_isLoading)
+              Container(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          Color(0xFF1A237E),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'AI is thinking...',
+                      style: TextStyle(
+                        color: const Color(0xFF1A237E),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            SafeArea(
+              top: false,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: theme.scaffoldBackgroundColor,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, -2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color(0xFF1A237E).withValues(alpha: 0.05),
+                              const Color(0xFF4A148C).withValues(alpha: 0.05),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: const Color(
+                              0xFF1A237E,
+                            ).withValues(alpha: 0.2),
+                          ),
+                        ),
+                        child: TextField(
+                          controller: _controller,
+                          textInputAction: TextInputAction.send,
+                          onSubmitted: (_) => _send(),
+                          maxLines: null,
+                          decoration: InputDecoration(
+                            hintText: Translations.translate(
+                              locale,
+                              'askAiPrompt',
+                            ),
+                            hintStyle: TextStyle(color: Colors.grey[500]),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: _isLoading
+                            ? null
+                            : const LinearGradient(
+                                colors: [Color(0xFF1A237E), Color(0xFF311B92)],
+                              ),
+                        color: _isLoading ? Colors.grey[300] : null,
+                        shape: BoxShape.circle,
+                        boxShadow: _isLoading
+                            ? null
+                            : [
+                                BoxShadow(
+                                  color: const Color(
+                                    0xFF1A237E,
+                                  ).withValues(alpha: 0.4),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.send_rounded),
+                        color: _isLoading ? Colors.grey[500] : Colors.white,
+                        onPressed: _isLoading ? null : _send,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -73,10 +73,14 @@ class LocationProvider extends ChangeNotifier {
         final addr = json['address'] as Map<String, dynamic>?;
         String? district;
         if (addr != null) {
+          // Try multiple field names for district-level administrative divisions
+          // Bangladesh and other regions use different OSM tagging
           district =
+              addr['district'] as String? ??
               addr['county'] as String? ??
               addr['city'] as String? ??
-              addr['state_district'] as String?;
+              addr['state_district'] as String? ??
+              addr['administrative'] as String?;
         }
         _districtName = district ?? 'Location';
       } else {

@@ -6,10 +6,10 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 ///
 class GeminiClient {
   GeminiClient._()
-    : _apiKey = "AIzaSyANgbRULiznrCqKcKqHLo7pqneL1UujG0k",
+    : _apiKey = "AIzaSyB5LkZ7agvdCAHFEQ7hNyANJJ-uAzO606Y",
       _model = GenerativeModel(
         model: 'gemini-2.5-flash-lite',
-        apiKey: "AIzaSyANgbRULiznrCqKcKqHLo7pqneL1UujG0k",
+        apiKey: "AIzaSyB5LkZ7agvdCAHFEQ7hNyANJJ-uAzO606Y",
       );
 
   static final GeminiClient instance = GeminiClient._();

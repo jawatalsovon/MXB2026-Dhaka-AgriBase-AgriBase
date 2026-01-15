@@ -1,16 +1,22 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'database_service.dart';
 import 'mock_data_service.dart';
+import 'json_data_service.dart';
 
 /// Service for querying the crops.db database (created from CSV files)
 class CropsDatabaseService {
   final DatabaseService _dbService = DatabaseService.instance;
   final MockDataService _mockDataService = MockDataService.instance;
+  final JsonDataService _jsonDataService = JsonDataService.instance;
 
   /// Get all available crops
   Future<List<String>> getAllCrops() async {
     if (kIsWeb) {
-      return _mockDataService.getAllCrops();
+      // Use JSON data for web
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getAllCrops();
     }
     try {
       final query =
@@ -25,7 +31,10 @@ class CropsDatabaseService {
   /// Get all available years for a crop
   Future<List<String>> getYearsForCrop(String cropName) async {
     if (kIsWeb) {
-      return _mockDataService.getYearsForCrop(cropName);
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getYearsForCrop(cropName);
     }
     try {
       final query = '''
@@ -41,10 +50,35 @@ class CropsDatabaseService {
     }
   }
 
+  /// Get all available years for a district
+  Future<List<String>> getYearsForDistrict(String district) async {
+    if (kIsWeb) {
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getYearsForDistrict(district);
+    }
+    try {
+      final query = '''
+        SELECT DISTINCT year 
+        FROM crop_data 
+        WHERE district = ? 
+        ORDER BY year DESC
+      ''';
+      final results = await _dbService.queryCrops(query, [district]);
+      return results.map((row) => row['year'] as String).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
   /// Get all districts
   Future<List<String>> getAllDistricts() async {
     if (kIsWeb) {
-      return _mockDataService.getAllDistricts();
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getAllDistricts();
     }
     try {
       final query =
@@ -66,7 +100,14 @@ class CropsDatabaseService {
     int limit = 10,
   }) async {
     if (kIsWeb) {
-      return _mockDataService.getTopYieldDistricts(cropName, year, limit);
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getTopYieldDistricts(
+        cropName,
+        year,
+        limit: limit,
+      );
     }
     try {
       final query =
@@ -98,7 +139,10 @@ class CropsDatabaseService {
     String year,
   ) async {
     if (kIsWeb) {
-      return _mockDataService.getTotalYield(cropName, year);
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getTotalYield(cropName, year);
     }
     try {
       final query = '''
@@ -127,6 +171,12 @@ class CropsDatabaseService {
     String cropName,
     String district,
   ) async {
+    if (kIsWeb) {
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getYieldByYears(cropName, district);
+    }
     try {
       final query = '''
         SELECT 
@@ -155,7 +205,10 @@ class CropsDatabaseService {
     String year,
   ) async {
     if (kIsWeb) {
-      return _mockDataService.getDistrictDataForMap(cropName, year);
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getDistrictDataForMap(cropName, year);
     }
     try {
       final query = '''
@@ -209,6 +262,16 @@ class CropsDatabaseService {
     String year, {
     int limit = 10,
   }) async {
+    if (kIsWeb) {
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getTopCropsForDistrict(
+        district,
+        year,
+        limit: limit,
+      );
+    }
     try {
       final query =
           '''
@@ -222,7 +285,7 @@ class CropsDatabaseService {
           END as yield_per_hectare
         FROM crop_data
         WHERE district = ? AND year = ? AND production_mt IS NOT NULL
-        ORDER BY production_mt DESC
+        ORDER BY yield_per_hectare DESC
         ${limit > 0 ? 'LIMIT ?' : ''}
       '''
               .trim();
@@ -295,7 +358,10 @@ class CropsDatabaseService {
     String cropName,
   ) async {
     if (kIsWeb) {
-      return _mockDataService.getTotalYieldFromPredictions(cropName);
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getTotalYieldFromPredictions(cropName);
     }
     try {
       final query = '''
@@ -322,7 +388,10 @@ class CropsDatabaseService {
   /// Get pie chart data for crop area
   Future<List<Map<String, dynamic>>> getPieCropArea() async {
     if (kIsWeb) {
-      return _mockDataService.getPieCropArea();
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getPieCropArea();
     }
     try {
       final query = 'SELECT * FROM pie_crop_area';
@@ -336,7 +405,10 @@ class CropsDatabaseService {
   /// Get pie chart data for fibre area
   Future<List<Map<String, dynamic>>> getPieFibreArea() async {
     if (kIsWeb) {
-      return _mockDataService.getPieCategoryArea(['lentil', 'chickpea']);
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getPieFibreArea();
     }
     try {
       final query = 'SELECT * FROM pie_fibre_area';
@@ -350,7 +422,10 @@ class CropsDatabaseService {
   /// Get pie chart data for narcos area
   Future<List<Map<String, dynamic>>> getPieNarcosArea() async {
     if (kIsWeb) {
-      return _mockDataService.getPieCategoryArea([]);
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getPieNarcosArea();
     }
     try {
       final query = 'SELECT * FROM pie_narcos_area';
@@ -364,7 +439,10 @@ class CropsDatabaseService {
   /// Get pie chart data for oilseed area
   Future<List<Map<String, dynamic>>> getPieOilseedArea() async {
     if (kIsWeb) {
-      return _mockDataService.getPieCategoryArea([]);
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getPieOilseedArea();
     }
     try {
       final query = 'SELECT * FROM pie_oilseed_area';
@@ -378,7 +456,10 @@ class CropsDatabaseService {
   /// Get pie chart data for pulse area
   Future<List<Map<String, dynamic>>> getPiePulseArea() async {
     if (kIsWeb) {
-      return _mockDataService.getPieCategoryArea(['lentil', 'chickpea']);
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getPiePulseArea();
     }
     try {
       final query = 'SELECT * FROM pie_pulse_area';
@@ -392,7 +473,10 @@ class CropsDatabaseService {
   /// Get pie chart data for rice area
   Future<List<Map<String, dynamic>>> getPieRiceArea() async {
     if (kIsWeb) {
-      return _mockDataService.getPieCategoryArea(['rice']);
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getPieRiceArea();
     }
     try {
       final query = 'SELECT * FROM pie_rice_area';
@@ -406,7 +490,10 @@ class CropsDatabaseService {
   /// Get pie chart data for spices area
   Future<List<Map<String, dynamic>>> getPieSpicesArea() async {
     if (kIsWeb) {
-      return _mockDataService.getPieCategoryArea([]);
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getPieSpicesArea();
     }
     try {
       final query = 'SELECT * FROM pie_spices_area';
@@ -420,7 +507,10 @@ class CropsDatabaseService {
   /// Get pie chart data for suger area
   Future<List<Map<String, dynamic>>> getPieSugerArea() async {
     if (kIsWeb) {
-      return _mockDataService.getPieCategoryArea([]);
+      if (!_jsonDataService.isInitialized) {
+        await _jsonDataService.initialize();
+      }
+      return _jsonDataService.getPieSugerArea();
     }
     try {
       final query = 'SELECT * FROM pie_sugar_area';

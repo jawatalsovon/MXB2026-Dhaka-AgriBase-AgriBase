@@ -14,6 +14,7 @@ import 'providers/disease_detection_provider.dart';
 import 'providers/weather_provider.dart';
 import 'providers/soil_provider.dart';
 import 'providers/location_provider.dart';
+import 'providers/my_crops_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,6 +50,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => WeatherProvider()),
         ChangeNotifierProvider(create: (_) => LocationProvider()),
         ChangeNotifierProvider(create: (_) => SoilProvider()),
+        ChangeNotifierProvider(create: (_) => MyCropsProvider()),
       ],
       child: Consumer3<ThemeProvider, LocalizationProvider, FontSizeProvider>(
         builder:
@@ -155,7 +157,7 @@ class MyApp extends StatelessWidget {
                 ),
                 darkTheme: ThemeData.dark().copyWith(
                   colorScheme: ColorScheme.dark(
-                    primary: const Color.fromARGB(255, 0, 136, 113),
+                    primary: const Color.fromARGB(255, 0, 109, 91),
                     secondary: const Color.fromARGB(255, 76, 175, 80),
                     surface: const Color(0xFF1E1E1E),
                     onSurface: Colors.white,

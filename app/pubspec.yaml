@@ -39,6 +39,8 @@ dependencies:
   syncfusion_flutter_charts: ^32.1.20
   sqflite: ^2.3.0
   sqflite_common_ffi: ^2.3.0
+  sqflite_common_ffi_web: ^0.4.0
+  sqlite3: ^2.0.0
   path_provider: ^2.1.1
   path: ^1.8.3
   provider: ^6.1.1
@@ -101,6 +103,10 @@ flutter:
   assets:
     - assets/json/bd-districts.json
     - assets/json/bd.geojson
+    - assets/json/crop_data.json
+    - assets/json/prediction_data.json
+    - assets/json/attempt_data.json
+    - assets/json/pie_data.json
     - assets/databases/attempt.db
     - assets/databases/predictions.db
     - assets/databases/crops.db
