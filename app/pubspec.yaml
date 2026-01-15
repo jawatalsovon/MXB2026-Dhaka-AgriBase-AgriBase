@@ -103,6 +103,10 @@ flutter:
   assets:
     - assets/json/bd-districts.json
     - assets/json/bd.geojson
+    - assets/json/crop_data.json
+    - assets/json/prediction_data.json
+    - assets/json/attempt_data.json
+    - assets/json/pie_data.json
     - assets/databases/attempt.db
     - assets/databases/predictions.db
     - assets/databases/crops.db

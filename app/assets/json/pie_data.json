@@ -1,0 +1,225 @@
+{
+  "pie_data": {
+    "pie_crop_area": [
+      {
+        "Category": "Cereals",
+        "Percentage": 76.17
+      },
+      {
+        "Category": "Pulses",
+        "Percentage": 2.27
+      },
+      {
+        "Category": "Oilseeds",
+        "Percentage": 3.51
+      },
+      {
+        "Category": "Spices and Condiments",
+        "Percentage": 2.35
+      },
+      {
+        "Category": "Sugar Crops",
+        "Percentage": 0.62
+      },
+      {
+        "Category": "Fibre",
+        "Percentage": 4.75
+      },
+      {
+        "Category": "Drug & Narcotics",
+        "Percentage": 0.59
+      },
+      {
+        "Category": "Winter Vegetable",
+        "Percentage": 3.74
+      }
+    ],
+    "pie_fibre_area": [
+      {
+        "Category": "Jute",
+        "Percentage": 97.93
+      },
+      {
+        "Category": "Cotton (Rabi+Kharif)",
+        "Percentage": 1.59
+      },
+      {
+        "Category": "Sunhemp(Shanpat)",
+        "Percentage": 0.003
+      },
+      {
+        "Category": "Sunhemp(Rabi)",
+        "Percentage": 0.0
+      },
+      {
+        "Category": "Shimul Cotton",
+        "Percentage": 0.44
+      }
+    ],
+    "pie_narcos_area": [
+      {
+        "Category": "Tea",
+        "Percentage": 36.62
+      },
+      {
+        "Category": "Tobacco (Jati)",
+        "Percentage": 4.68
+      },
+      {
+        "Category": "Tobacco (Mathihari)",
+        "Percentage": 1.5
+      },
+      {
+        "Category": "Tobacco (Virginia)",
+        "Percentage": 19.92
+      },
+      {
+        "Category": "Betelnut",
+        "Percentage": 25.19
+      },
+      {
+        "Category": "Betel Leaves",
+        "Percentage": 14.03
+      }
+    ],
+    "pie_oilseed_area": [
+      {
+        "Category": "Rape and Mustard",
+        "Percentage": 60.53
+      },
+      {
+        "Category": "Til",
+        "Percentage": 5.73
+      },
+      {
+        "Category": "Groundnut",
+        "Percentage": 7.2
+      },
+      {
+        "Category": "Soyabean",
+        "Percentage": 10.72
+      },
+      {
+        "Category": "Linseed",
+        "Percentage": 0.88
+      },
+      {
+        "Category": "Coconut",
+        "Percentage": 5.51
+      },
+      {
+        "Category": "Sunflower",
+        "Percentage": 0.44
+      }
+    ],
+    "pie_pulse_area": [
+      {
+        "Category": "Masur",
+        "Percentage": 37.95
+      },
+      {
+        "Category": "Kheshari",
+        "Percentage": 30.91
+      },
+      {
+        "Category": "Mashkalai",
+        "Percentage": 11.59
+      },
+      {
+        "Category": "Mung",
+        "Percentage": 12.84
+      },
+      {
+        "Category": "Motor",
+        "Percentage": 1.93
+      },
+      {
+        "Category": "Gram",
+        "Percentage": 1.14
+      },
+      {
+        "Category": "Fallon",
+        "Percentage": 3.41
+      },
+      {
+        "Category": "Other Pulses",
+        "Percentage": 0.22
+      }
+    ],
+    "pie_rice_area": [
+      {
+        "Category": "Aus",
+        "Percentage": 9.12
+      },
+      {
+        "Category": "Aman",
+        "Percentage": 49.15
+      },
+      {
+        "Category": "Boro",
+        "Percentage": 41.7
+      }
+    ],
+    "pie_spices_area": [
+      {
+        "Category": "Rape and Mustard",
+        "Percentage": 60.53
+      },
+      {
+        "Category": "Til",
+        "Percentage": 5.73
+      },
+      {
+        "Category": "Groundnut",
+        "Percentage": 7.2
+      },
+      {
+        "Category": "Soyabean",
+        "Percentage": 10.72
+      },
+      {
+        "Category": "Linseed",
+        "Percentage": 0.88
+      },
+      {
+        "Category": "Coconut",
+        "Percentage": 5.51
+      },
+      {
+        "Category": "Sunflower",
+        "Percentage": 0.44
+      }
+    ],
+    "pie_suger_area": [
+      {
+        "Category": "Sugar Cane",
+        "Percentage": 64.16
+      },
+      {
+        "Category": "Date Palm (Juice)",
+        "Percentage": 13.98
+      },
+      {
+        "Category": "Date Palm (Fruit)",
+        "Percentage": 7.8
+      },
+      {
+        "Category": "Ripe Palmyra (Fruit)",
+        "Percentage": 7.98
+      },
+      {
+        "Category": "Palmyra Palm (Juice)",
+        "Percentage": 2.35
+      },
+      {
+        "Category": "Ripe Palmyra (Tal)",
+        "Percentage": 3.7
+      }
+    ]
+  },
+  "metadata": {
+    "exported": "2026-01-15T19:59:11.554339",
+    "source": "CSV files from data/pie/",
+    "total_categories": 8
+  }
+}

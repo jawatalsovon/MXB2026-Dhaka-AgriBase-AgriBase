@@ -419,6 +419,16 @@ class _HistoricalDataSectionState extends State<HistoricalDataSection> {
                           child: Row(
                             children: [
                               Expanded(
+                                flex: 1,
+                                child: Text(
+                                  locale.languageCode == 'bn' ? 'র‍্যাঙ্ক' : 'Rank',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 3,
                                 child: Text(
                                   Translations.translate(locale, 'district'),
                                   style: const TextStyle(
@@ -427,6 +437,7 @@ class _HistoricalDataSectionState extends State<HistoricalDataSection> {
                                 ),
                               ),
                               Expanded(
+                                flex: 2,
                                 child: Text(
                                   '${Translations.translate(locale, 'yield')} (MT/Ha)',
                                   style: const TextStyle(
@@ -436,6 +447,7 @@ class _HistoricalDataSectionState extends State<HistoricalDataSection> {
                                 ),
                               ),
                               Expanded(
+                                flex: 2,
                                 child: Text(
                                   '${Translations.translate(locale, 'production')} (MT)',
                                   style: const TextStyle(
@@ -460,7 +472,11 @@ class _HistoricalDataSectionState extends State<HistoricalDataSection> {
                           ...((_topCount == -1
                                   ? _topDistricts
                                   : _topDistricts.take(_topCount).toList())
-                              .map((district) {
+                              .asMap()
+                              .entries
+                              .map((entry) {
+                                final index = entry.key;
+                                final district = entry.value;
                                 final yieldValue =
                                     (district['yield_per_hectare'] as num? ?? 0)
                                         .toDouble();
@@ -482,6 +498,29 @@ class _HistoricalDataSectionState extends State<HistoricalDataSection> {
                                   child: Row(
                                     children: [
                                       Expanded(
+                                        flex: 1,
+                                        child: Container(
+                                          width: 28,
+                                          height: 28,
+                                          decoration: BoxDecoration(
+                                            color: Colors.transparent
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              '${index + 1}',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12,
+                                                color: index < 3
+                                                    ? Colors.amber
+                                                    : theme.colorScheme.primary,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 3,
                                         child: Tooltip(
                                           message: 'District name',
                                           child: Text(
@@ -493,6 +532,7 @@ class _HistoricalDataSectionState extends State<HistoricalDataSection> {
                                         ),
                                       ),
                                       Expanded(
+                                        flex: 2,
                                         child: Tooltip(
                                           message: 'Yield per hectare',
                                           child: Text(
@@ -506,6 +546,7 @@ class _HistoricalDataSectionState extends State<HistoricalDataSection> {
                                         ),
                                       ),
                                       Expanded(
+                                        flex: 2,
                                         child: Tooltip(
                                           message: 'Total production',
                                           child: Text(

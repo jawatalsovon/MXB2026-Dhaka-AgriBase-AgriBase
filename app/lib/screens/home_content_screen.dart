@@ -380,7 +380,10 @@ class _HomeScreenState extends State<HomeScreen> {
     Locale locale,
     AuthProvider authProvider,
   ) {
+    final theme = Theme.of(context);
+    // make the container expanded, as it is being fixed width somehow
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(24.0),
       decoration: const BoxDecoration(
         gradient: LinearGradient(

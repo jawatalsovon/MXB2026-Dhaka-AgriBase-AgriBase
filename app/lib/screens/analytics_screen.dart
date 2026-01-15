@@ -630,10 +630,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     // Sort by percentage descending and take top 5
     final sortedData = List.from(filteredData)
       ..sort((a, b) {
-        final percentA =
-            double.tryParse(a['Percentage'] as String? ?? '0') ?? 0.0;
-        final percentB =
-            double.tryParse(b['Percentage'] as String? ?? '0') ?? 0.0;
+        final percentA = (a['Percentage'] is num)
+            ? (a['Percentage'] as num).toDouble()
+            : double.tryParse(a['Percentage']?.toString() ?? '0') ?? 0.0;
+        final percentB = (b['Percentage'] is num)
+            ? (b['Percentage'] as num).toDouble()
+            : double.tryParse(b['Percentage']?.toString() ?? '0') ?? 0.0;
         return percentB.compareTo(percentA);
       });
 
@@ -672,11 +674,16 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                               locale,
                             );
                           },
-                          yValueMapper: (datum, _) =>
-                              double.tryParse(
-                                datum['Percentage'] as String? ?? '0',
-                              ) ??
-                              0.0,
+                          yValueMapper: (datum, _) {
+                            final percentage = datum['Percentage'];
+                            if (percentage is num) {
+                              return percentage.toDouble();
+                            }
+                            return double.tryParse(
+                                  percentage?.toString() ?? '0',
+                                ) ??
+                                0.0;
+                          },
                           pointColorMapper: (datum, index) =>
                               _pieColors[index % _pieColors.length],
                           dataLabelSettings: DataLabelSettings(

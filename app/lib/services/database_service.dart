@@ -43,81 +43,90 @@ class DatabaseService {
       return; // Already initialized
     }
 
-    if (kIsWeb) {
-      // Web Platform: skip upfront DB loading
-      // Databases will be lazily loaded on first query via _ensureWebDbOpenedFor()
-      debugPrint('Web platform: databases will be loaded on demand.');
+    try {
+      // Web platform: sqflite doesn't have web support by default
+      // We need to skip database initialization on web and rely on alternative data sources
+      if (kIsWeb) {
+        debugPrint(
+          'Web platform: Database files cannot be used. Services will use alternative data sources (mock/API).',
+        );
+        _initialized = true;
+        return;
+      }
+
+      // Get database path based on platform
+      String databasesPath;
+      if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+        // Use application documents directory for desktop
+        final appDir = await getApplicationDocumentsDirectory();
+        databasesPath = appDir.path;
+      } else {
+        // Use standard path provider for mobile
+        databasesPath = await getDatabasesPath();
+      }
+
+      final attemptDbPath = join(databasesPath, 'attempt.db');
+      final predictionsDbPath = join(databasesPath, 'predictions.db');
+      final cropsDbPath = join(databasesPath, 'crops.db');
+
+      // Copy databases from assets if they don't exist
+      if (!await File(attemptDbPath).exists()) {
+        try {
+          final data = await rootBundle.load('assets/databases/attempt.db');
+          final bytes = data.buffer.asUint8List();
+          await File(attemptDbPath).writeAsBytes(bytes);
+        } catch (e) {
+          debugPrint('Error copying attempt.db: $e');
+        }
+      }
+
+      if (!await File(predictionsDbPath).exists()) {
+        try {
+          final data = await rootBundle.load('assets/databases/predictions.db');
+          final bytes = data.buffer.asUint8List();
+          await File(predictionsDbPath).writeAsBytes(bytes);
+        } catch (e) {
+          debugPrint('Error copying predictions.db: $e');
+        }
+      }
+
+      if (!await File(cropsDbPath).exists()) {
+        try {
+          final data = await rootBundle.load('assets/databases/crops.db');
+          final bytes = data.buffer.asUint8List();
+          await File(cropsDbPath).writeAsBytes(bytes);
+        } catch (e) {
+          debugPrint('Error copying crops.db: $e');
+        }
+      }
+
+      // Open databases
+      if (await File(attemptDbPath).exists()) {
+        _attemptDb = await openDatabase(attemptDbPath, readOnly: true);
+      }
+
+      if (await File(predictionsDbPath).exists()) {
+        _predictionsDb = await openDatabase(predictionsDbPath, readOnly: true);
+      }
+
+      if (await File(cropsDbPath).exists()) {
+        _cropsDb = await openDatabase(cropsDbPath, readOnly: true);
+      }
+
       _initialized = true;
-      return;
+    } catch (e) {
+      debugPrint('Error initializing databases: $e');
+      _initialized = true;
     }
-
-    // Get database path based on platform
-    String databasesPath;
-    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      // Use application documents directory for desktop
-      final appDir = await getApplicationDocumentsDirectory();
-      databasesPath = appDir.path;
-    } else {
-      // Use standard path provider for mobile
-      databasesPath = await getDatabasesPath();
-    }
-
-    final attemptDbPath = join(databasesPath, 'attempt.db');
-    final predictionsDbPath = join(databasesPath, 'predictions.db');
-    final cropsDbPath = join(databasesPath, 'crops.db');
-
-    // Copy databases from assets if they don't exist
-    if (!await File(attemptDbPath).exists()) {
-      try {
-        final data = await rootBundle.load('assets/databases/attempt.db');
-        final bytes = data.buffer.asUint8List();
-        await File(attemptDbPath).writeAsBytes(bytes);
-      } catch (e) {
-        // ignore: empty_catches
-      }
-    }
-
-    if (!await File(predictionsDbPath).exists()) {
-      try {
-        final data = await rootBundle.load('assets/databases/predictions.db');
-        final bytes = data.buffer.asUint8List();
-        await File(predictionsDbPath).writeAsBytes(bytes);
-      } catch (e) {
-        // ignore: empty_catches
-      }
-    }
-
-    if (!await File(cropsDbPath).exists()) {
-      try {
-        final data = await rootBundle.load('assets/databases/crops.db');
-        final bytes = data.buffer.asUint8List();
-        await File(cropsDbPath).writeAsBytes(bytes);
-      } catch (e) {
-        // ignore: empty_catches
-      }
-    }
-
-    // Open databases
-    if (await File(attemptDbPath).exists()) {
-      _attemptDb = await openDatabase(attemptDbPath, readOnly: true);
-    } else {}
-
-    if (await File(predictionsDbPath).exists()) {
-      _predictionsDb = await openDatabase(predictionsDbPath, readOnly: true);
-    } else {}
-
-    if (await File(cropsDbPath).exists()) {
-      _cropsDb = await openDatabase(cropsDbPath, readOnly: true);
-    } else {}
-
-    _initialized = true;
   }
 
   /// Get connection to attempt.db (historical data 2017-2024)
   Database get attemptDb {
     if (_attemptDb == null) {
       if (kIsWeb) {
-        throw Exception('Databases not available on web platform.');
+        throw Exception(
+          'Databases not available on web platform. Use alternative data sources.',
+        );
       }
       throw Exception('Database not initialized. Call initialize() first.');
     }
@@ -128,7 +137,9 @@ class DatabaseService {
   Database get predictionsDb {
     if (_predictionsDb == null) {
       if (kIsWeb) {
-        throw Exception('Databases not available on web platform.');
+        throw Exception(
+          'Databases not available on web platform. Use alternative data sources.',
+        );
       }
       throw Exception('Database not initialized. Call initialize() first.');
     }
@@ -139,7 +150,9 @@ class DatabaseService {
   Database get cropsDb {
     if (_cropsDb == null) {
       if (kIsWeb) {
-        throw Exception('Databases not available on web platform.');
+        throw Exception(
+          'Databases not available on web platform. Use alternative data sources.',
+        );
       }
       throw Exception('Database not initialized. Call initialize() first.');
     }
